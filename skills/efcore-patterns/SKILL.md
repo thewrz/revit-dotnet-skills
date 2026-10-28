@@ -238,7 +238,10 @@ var connectionString = builder.Configuration.GetConnectionString("appdb")
 
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseNpgsql(connectionString, npgsqlOptions =>
-        npgsqlOptions.MigrationsAssembly("MyApp.Infrastructure")));
+    {
+        npgsqlOptions.MigrationsAssembly("MyApp.Infrastructure");
+        npgsqlOptions.EnableRetryOnFailure();
+    }));
 
 // Add the migration worker
 builder.Services.AddHostedService<MigrationWorker>();
@@ -246,6 +249,9 @@ builder.Services.AddHostedService<MigrationWorker>();
 var host = builder.Build();
 host.Run();
 ```
+
+The [Npgsql EF Core provider](https://www.npgsql.org/efcore/misc/other.html#execution-strategy)
+requires `EnableRetryOnFailure()` to opt in to its retrying strategy.
 
 ### MigrationWorker.cs
 
