@@ -4,6 +4,9 @@ description: Build reactive/event-driven C# with R3 (Cysharp's modern reimplemen
 user-invocable: false
 ---
 
+> **Revit scope:** For Revit work, first read [revit-development](../revit-development/SKILL.md). Apply this skill only within the selected host/runtime and API-context boundaries; server examples concern companion services. Institutional preferences below remain intentional.
+
+
 # R3: Modern Reactive Extensions for .NET
 
 R3 is [Cysharp's](https://github.com/Cysharp/R3) ground-up reimplementation of Reactive

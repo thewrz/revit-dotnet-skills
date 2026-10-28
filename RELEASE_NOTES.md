@@ -1,3 +1,10 @@
+# Revit fork 1.8.0 (unreleased)
+
+- Add Revit C# guidance for .NET Framework 4.8, .NET 8 and .NET 10, including 2025.5/2026.5 transitions.
+- Separate host adapters from pure business logic; document API context, transactions, cancellation and versioned deployment.
+- Preserve upstream knowledge and MIT attribution; scope inherited skills/agents for the Revit host.
+- Rename plugin/marketplace identity to revit-dotnet-skills; retain full references when copying skills.
+
 # Release Notes
 
 ## v1.7.1 (2026-10-11)

@@ -1,6 +1,20 @@
-# .NET Skills for Claude Code and Codex
+# Revit C# Development Skills
 
-A comprehensive AI coding plugin with **30 skills** and **5 specialized agents** for professional .NET development. Battle-tested patterns from production systems covering C#, Akka.NET, Aspire, EF Core, testing, and performance optimization.
+A Revit-focused fork of Aaron Stannard’s .NET skills. An AI coding plugin with **40 skills** and **6 specialized agents** for professional .NET development. Battle-tested patterns from production systems covering C#, Akka.NET, Aspire, EF Core, testing, and performance optimization.
+
+
+Start with **revit-development** for Revit tasks. It covers .NET Framework 4.8,
+.NET 8 and .NET 10, including the **2025.5/2026.5 runtime transition**, API drift,
+ExternalEvent dispatch, detached business logic and measured transaction batching.
+
+This remains a fork because all 39 upstream skills and 6 agents remain useful;
+server/cloud skills apply to companion services, not automatically to the Revit host.
+Upstream institutional preferences are retained. See the [research audit](docs/research/audit.md)
+for factual corrections, source coverage and verification limits. This package is not
+an Autodesk or Microsoft endorsement, and does not install Revit or its API DLLs.
+
+Derived from [Aaronontheweb/dotnet-skills](https://github.com/Aaronontheweb/dotnet-skills)
+at `5ca5db8cf25566f19d2a5dc53204d4af22b23a0d`. The original MIT notice is preserved in [LICENSE](LICENSE).
 
 ## Installation
 
@@ -13,8 +27,8 @@ This plugin works with multiple AI coding assistants that support skills/agents.
 Run these commands inside the Claude Code CLI (the terminal app, not the VSCode extension):
 
 ```
-/plugin marketplace add https://github.com/Aaronontheweb/dotnet-skills
-/plugin install dotnet-skills
+/plugin marketplace add https://github.com/thewrz/revit-dotnet-skills
+/plugin install revit-dotnet-skills
 ```
 
 To update:
@@ -29,8 +43,8 @@ To update:
 Add the marketplace, then install the plugin:
 
 ```bash
-codex plugin marketplace add Aaronontheweb/dotnet-skills
-codex plugin add dotnet-skills@dotnet-skills
+codex plugin marketplace add thewrz/revit-dotnet-skills
+codex plugin add revit-dotnet-skills@revit-dotnet-skills
 ```
 
 Verify the install:
@@ -47,14 +61,14 @@ Skills are auto-discovered from the plugin's `skills/` directory. Invoke one wit
 Run these commands:
 
 ```bash
-/plugin marketplace add https://github.com/Aaronontheweb/dotnet-skills
-/plugin install dotnet-skills@dotnet-skills
+/plugin marketplace add https://github.com/thewrz/revit-dotnet-skills
+/plugin install revit-dotnet-skills@revit-dotnet-skills
 ```
 
 To update:
 
 ```bash
-/plugin update dotnet-skills@dotnet-skills
+/plugin update revit-dotnet-skills@revit-dotnet-skills
 ```
 
 Alternatively:
@@ -64,7 +78,7 @@ Clone or copy skills to your project or global config:
 **Project-level** (recommended):
 ```bash
 # Clone to .github/skills/ in your project
-git clone https://github.com/Aaronontheweb/dotnet-skills.git /tmp/dotnet-skills
+git clone https://github.com/thewrz/revit-dotnet-skills.git /tmp/dotnet-skills
 cp -r /tmp/dotnet-skills/skills/* .github/skills/
 ```
 
@@ -79,14 +93,14 @@ cp -r /tmp/dotnet-skills/skills/* ~/.copilot/skills/
 [Official Docs](https://opencode.ai/docs/skills)
 
 ```bash
-git clone https://github.com/Aaronontheweb/dotnet-skills.git /tmp/dotnet-skills
+git clone https://github.com/thewrz/revit-dotnet-skills.git /tmp/dotnet-skills
 
 # Global installation (directory names must match frontmatter 'name' field)
 mkdir -p ~/.config/opencode/skills ~/.config/opencode/agents
 for skill_file in /tmp/dotnet-skills/skills/*/SKILL.md; do
   skill_name=$(grep -m1 "^name:" "$skill_file" | sed 's/name: *//')
   mkdir -p ~/.config/opencode/skills/$skill_name
-  cp "$skill_file" ~/.config/opencode/skills/$skill_name/SKILL.md
+  cp -R "$(dirname "$skill_file")/." ~/.config/opencode/skills/"$skill_name"/
 done
 cp /tmp/dotnet-skills/agents/*.md ~/.config/opencode/agents/
 ```
@@ -112,6 +126,7 @@ IMPORTANT: Prefer retrieval-led reasoning over pretraining for any .NET work.
 Workflow: skim repo patterns -> consult dotnet-skills by name -> implement smallest-change -> note conflicts.
 
 Routing (invoke by name)
+- Revit add-ins, modeless UI, migrations: revit-development FIRST
 - C# / code quality: modern-csharp-coding-standards, csharp-concurrency-patterns, api-design, type-design-performance, r3-reactive-extensions
 - ASP.NET Core / Web (incl. Aspire): aspire-service-defaults, aspire-integration-testing, mailpit-integration, mjml-email-templates, verify-email-snapshots
 - Data: efcore-patterns, database-performance
@@ -132,9 +147,10 @@ Run `./scripts/generate-skill-index-snippets.sh --update-readme` to refresh the 
 
 <!-- BEGIN DOTNET-SKILLS COMPRESSED INDEX -->
 ```markdown
-[dotnet-skills]|IMPORTANT: Prefer retrieval-led reasoning over pretraining for any .NET work.
+[revit-dotnet-skills]|IMPORTANT: Prefer retrieval-led reasoning over pretraining for any .NET work.
 |flow:{skim repo patterns -> consult dotnet-skills by name -> implement smallest-change -> note conflicts}
 |route:
+|revit:{revit-development}
 |akka:{akka-net-best-practices,akka-net-testing-patterns,akka-hosting-actor-patterns,akka-net-aspire-configuration,akka-net-management}
 |csharp:{modern-csharp-coding-standards,csharp-concurrency-patterns,csharp-nullable-reference-types,api-design,type-design-performance,r3-reactive-extensions}
 |aspnetcore-web:{aspire-integration-testing,aspire-configuration,aspire-service-defaults,mailpit-integration,mjml-email-templates}
@@ -158,6 +174,7 @@ Agents are AI personas with deep domain expertise. They're invoked automatically
 | **dotnet-concurrency-specialist** | Threading, async/await, race conditions, deadlock analysis             |
 | **dotnet-benchmark-designer**     | BenchmarkDotNet setup, custom benchmarks, measurement strategies       |
 | **dotnet-performance-analyst**    | Profiler analysis, benchmark interpretation, regression detection      |
+| **roslyn-incremental-generator-specialist** | Incremental source generators and testing |
 | **docfx-specialist**              | DocFX builds, API documentation, markdown linting                      |
 
 ---

@@ -1,17 +1,17 @@
 {
-  "name": "dotnet-skills",
-  "description": "Official Claude Code Marketplace for .NET development - C#, F#, Akka.NET, Aspire, testing frameworks, and specialized tools",
+  "name": "revit-dotnet-skills",
+  "description": "Revit C# development skills with version-aware .NET targets, safe API access and isolated business logic; derived from dotnet-skills.",
   "owner": {
-    "name": "Aaron Stannard",
-    "url": "https://github.com/Aaronontheweb"
+    "name": "thewrz",
+    "url": "https://github.com/thewrz"
   },
-  "repository": "https://github.com/Aaronontheweb/dotnet-skills",
+  "repository": "https://github.com/thewrz/revit-dotnet-skills",
   "plugins": [
     {
-      "name": "dotnet-skills",
+      "name": "revit-dotnet-skills",
       "source": "./",
-      "version": "1.7.1",
-      "description": "Complete .NET development toolkit with 39 skills and 6 specialized agents covering Akka.NET, Aspire, testing, and modern C# patterns"
+      "version": "1.8.0",
+      "description": "Revit C# toolkit with 40 skills and 6 specialized agents, preserving upstream .NET expertise"
     }
   ]
 }

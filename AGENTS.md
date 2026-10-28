@@ -4,11 +4,11 @@ This file provides guidance to AI coding agents (Claude Code, Codex, OpenCode, a
 
 ## Repository Purpose
 
-**Canonical repository:** https://github.com/Aaronontheweb/dotnet-skills
+**Canonical repository:** https://github.com/thewrz/revit-dotnet-skills
 
-This is the official marketplace for .NET development skills and agents, covering the entire .NET ecosystem: C#, F#, MSBuild, NuGet, Aspire, testing frameworks, and specialized tools like DocFX and BenchmarkDotNet.
+This is a Revit C# focused fork of Aaronontheweb/dotnet-skills. Preserve the upstream MIT notice and useful institutional practices. For Revit work load revit-development before general .NET skills; server advice is scoped to companion services.
 
-This is a knowledge base repository - not a traditional code project. There is no build system, tests, or compiled output.
+This is a knowledge base repository - not a traditional code project. There is no compiled product. Run the manifest validators and `python -m unittest discover -s tests -v` for packaging regressions; these do not test a licensed Revit host.
 
 ## Structure
 
@@ -96,19 +96,19 @@ When adding a skill with a **new prefix pattern**, update `scripts/generate-skil
 **Users install with:**
 ```bash
 # Claude Code
-/plugin marketplace add Aaronontheweb/dotnet-skills
-/plugin install dotnet-skills
+/plugin marketplace add thewrz/revit-dotnet-skills
+/plugin install revit-dotnet-skills
 
 # Codex
-codex plugin marketplace add Aaronontheweb/dotnet-skills
-codex plugin add dotnet-skills@dotnet-skills
+codex plugin marketplace add thewrz/revit-dotnet-skills
+codex plugin add revit-dotnet-skills@revit-dotnet-skills
 ```
 
 See `skills/marketplace-publishing/SKILL.md` for detailed workflow.
 
 ## Content Guidelines
 
-- Skills should be comprehensive reference documents (10-40KB)
+- Skills should be concise entry points with focused supporting references; avoid generic repetition
 - Include concrete code examples with modern C# patterns
 - Reference authoritative sources rather than duplicating content
 - Agents define personas with expertise areas and diagnostic approaches
