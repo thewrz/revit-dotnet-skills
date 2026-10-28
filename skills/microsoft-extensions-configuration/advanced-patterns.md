@@ -55,6 +55,8 @@ public class DatabaseSettingsValidator : IValidateOptions<DatabaseSettings>
         {
             try
             {
+                // This sample targets SQL Server; use the selected provider's
+                // connection-string builder when supporting other databases.
                 var builder = new SqlConnectionStringBuilder(options.ConnectionString);
                 if (string.IsNullOrEmpty(builder.DataSource))
                 {

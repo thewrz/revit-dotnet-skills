@@ -194,7 +194,7 @@ When a `Type` must round-trip through a generic collection, wrap it in a `TypeKe
 
 ## Unsafe accessors for non-public members
 
-**General rule:** reflection is not just `Activator.CreateInstance` and `GetInterfaces`. Reading private fields (`FieldInfo.GetValue`), invoking private methods (`MethodInfo.Invoke`), and calling non-public constructors (`ConstructorInfo.Invoke`) all trigger trimming warnings and can fail under Native AOT. A strongly-typed, trimming- and AOT-safe alternative is `[UnsafeAccessor]` — a .NET 8+ feature that produces a static accessor resolved at code-generation time (no JIT reflection).
+**General rule:** reflection is not just `Activator.CreateInstance` and `GetInterfaces`. Reading private fields (`FieldInfo.GetValue`), invoking private methods (`MethodInfo.Invoke`), and calling non-public constructors (`ConstructorInfo.Invoke`) all trigger trimming warnings and can fail under Native AOT. A strongly-typed alternative is `[UnsafeAccessor]` — a .NET 8+ feature whose extern accessor implementation is provided by the runtime from the attribute and signature; it can be used with trimming and Native AOT.
 
 ```csharp
 using System.Runtime.CompilerServices;
@@ -232,7 +232,7 @@ public static class OrderAccessors
 
 **Rules:**
 - Declare the accessor `static extern` with `[UnsafeAccessor(kind)]`; set `Name` for everything except constructors.
-- The member name is a compile-time constant, so the linker resolves it statically — no `RequiresUnreferencedCode`, no `DynamicallyAccessedMembers`, no warnings.
+- The member name is a compile-time constant in the accessor declaration, but the runtime resolves the target member from the attribute and signature. This avoids reflection APIs; a mismatched target can still fail at runtime.
 - Instance members take the target as the first parameter. `StaticMethod`/`StaticField` take a dummy first parameter whose type identifies the owning type (its value is ignored).
 - `Field`/`StaticField` accessors return by `ref` (`ref readonly` for read-only fields). `Constructor` returns the constructed type. Properties are accessed through their `get_*`/`set_*` methods via `UnsafeAccessorKind.Method`; a setter takes the value as the last parameter and returns `void`.
 - Works with generics: close the accessor over the generic type parameter and the runtime instantiates it per type argument.

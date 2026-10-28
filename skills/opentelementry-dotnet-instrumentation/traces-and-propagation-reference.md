@@ -561,9 +561,12 @@ of the default composite propagator).
 ### Baggage Rules
 
 - Baggage keys and values are strings
-- Keys must match the pattern: `[a-z0-9][-a-z0-9._*]*[a-z0-9]` (lowercase)
-- The total baggage size SHOULD be limited (typically 180 characters per entry,
-  max 64 entries per the [W3C baggage spec](https://www.w3.org/TR/baggage/))
+- The OTel API accepts non-empty, case-sensitive UTF-8 keys. W3C propagation
+  restricts wire-format keys to the RFC token grammar; lowercase alphanumeric keys
+  are a portable convention, not an API requirement.
+- Keep baggage small. W3C requires propagation of up to 64 members and 8192 bytes
+  total; intermediaries may drop entries above those limits. Any smaller per-entry
+  limit is an application policy, not the W3C limit.
 - Baggage is propagated alongside trace context via the same HTTP headers mechanism
 - Do NOT use baggage for high-cardinality or sensitive data
 

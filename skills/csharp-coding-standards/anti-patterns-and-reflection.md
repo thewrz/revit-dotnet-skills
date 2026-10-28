@@ -110,7 +110,7 @@ Reflection has legitimate uses, but mapping DTOs isn't one of them:
 
 ## UnsafeAccessorAttribute (.NET 8+)
 
-When you genuinely need to access private or internal members (serializers, test helpers, framework code), use `UnsafeAccessorAttribute` instead of traditional reflection. It provides **zero-overhead, AOT-compatible** member access.
+When you genuinely need to access private or internal members (serializers, test helpers, framework code), use `UnsafeAccessorAttribute` instead of traditional reflection. It provides statically declared member access without the reflection APIs; it can be used with Native AOT, but the runtime must still match the accessor signature to the target member.
 
 ```csharp
 // AVOID: Traditional reflection - slow, allocates, breaks AOT
@@ -148,8 +148,8 @@ static extern Order CreateOrder(OrderId id, CustomerId customerId);
 
 | Aspect | Reflection | UnsafeAccessor |
 |--------|------------|----------------|
-| Performance | Slow (100-1000x) | Zero overhead |
-| AOT compatible | No | Yes |
+| Performance | Runtime-dependent | Avoids reflection lookup/invocation; measure the accessor path |
+| AOT compatible | Depends on preserved metadata and operation; dynamic code generation is restricted | Supported with matching target signatures |
 | Allocations | Yes (boxing, arrays) | None |
 | Compile-time checked | No | Partially (signature) |
 
@@ -220,7 +220,7 @@ public record Order(OrderId Id, CustomerId CustomerId, Money Total) : IEntity
 // BAD: Exposes internal list for modification
 public List<Order> GetOrders() => _orders;
 
-// GOOD: Returns read-only view
+// GOOD: Exposes a read-only interface (wrap or copy if callers must not mutate the shared list)
 public IReadOnlyList<Order> GetOrders() => _orders;
 ```
 

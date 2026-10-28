@@ -83,13 +83,17 @@ public record ShoppingCart(
 Value objects should **always be `readonly record struct`** for performance and value semantics. Use explicit conversions, never implicit operators.
 
 ```csharp
-public readonly record struct OrderId(string Value)
+public readonly record struct OrderId
 {
-    public OrderId(string value) : this(
-        !string.IsNullOrWhiteSpace(value)
+    public string Value { get; }
+
+    public OrderId(string value)
+    {
+        Value = !string.IsNullOrWhiteSpace(value)
             ? value
-            : throw new ArgumentException("OrderId cannot be empty", nameof(value)))
-    { }
+            : throw new ArgumentException("OrderId cannot be empty", nameof(value));
+    }
+
     public override string ToString() => Value;
 }
 
@@ -146,7 +150,7 @@ public decimal GetDiscount(Customer? customer) => customer switch
     _ => 0.05m
 };
 
-// Guard clauses with ArgumentNullException.ThrowIfNull (C# 11+)
+// Guard clauses with ArgumentNullException.ThrowIfNull (.NET 6+)
 public void ProcessOrder(Order? order)
 {
     ArgumentNullException.ThrowIfNull(order);

@@ -172,17 +172,14 @@ Migrating an existing large solution to CPM can introduce issues:
 
 ### Version Ranges
 
-CPM requires exact versions - it doesn't support version ranges:
+CPM supports NuGet interval version ranges. Floating versions are disallowed by default (NU1011); use a bounded interval where a range is required:
 
 ```xml
-<!-- NOT supported with CPM -->
+<!-- Supported interval range -->
 <PackageVersion Include="Newtonsoft.Json" Version="[13.0,14.0)" />
-
-<!-- Must use exact version -->
-<PackageVersion Include="Newtonsoft.Json" Version="13.0.3" />
 ```
 
-If you need version ranges (rare, but some library scenarios require it), CPM won't work.
+For reproducible application builds, prefer a fixed version or use a NuGet lock file. See [NU1011](https://learn.microsoft.com/en-us/nuget/reference/errors-and-warnings/nu1011).
 
 ### Older .NET Versions
 
@@ -288,12 +285,13 @@ dotnet nuget list source
 ### Add Private Feed
 
 ```bash
-# Add authenticated feed
+# Add the feed, then authenticate with a credential provider or an environment-variable
+# macro in NuGet.config. Follow your feed provider's credential guidance.
 dotnet nuget add source https://pkgs.dev.azure.com/myorg/_packaging/myfeed/nuget/v3/index.json \
-  --name MyFeed \
-  --username az \
-  --password $PAT \
-  --store-password-in-clear-text
+  --name MyFeed
+
+# Avoid --store-password-in-clear-text unless required by the platform; if required,
+# protect the resulting NuGet config and do not commit it.
 ```
 
 ### NuGet.config
@@ -311,6 +309,7 @@ For solution-specific sources, create `NuGet.config`:
   <packageSourceCredentials>
     <MyPrivateFeed>
       <add key="Username" value="az" />
+      <!-- NuGet environment-variable macro; keep the environment variable secret. -->
       <add key="ClearTextPassword" value="%NUGET_PAT%" />
     </MyPrivateFeed>
   </packageSourceCredentials>

@@ -232,7 +232,7 @@ public IEnumerable<Order> GetOrdersLazy(string customerId)
     }
 }
 
-// Return IReadOnlyList<T> for materialized, immutable collections
+// Return IReadOnlyList<T> for a materialized collection exposed through a read-only interface
 public IReadOnlyList<Order> GetOrders(string customerId)
 {
     return _repository

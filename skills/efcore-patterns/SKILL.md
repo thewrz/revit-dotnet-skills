@@ -341,7 +341,7 @@ var api = builder.AddProject<Projects.MyApp_Api>("api")
 
 ## Pattern 4: ExecutionStrategy for Transient Failures
 
-Always use `CreateExecutionStrategy()` for operations that might fail transiently:
+Use `CreateExecutionStrategy()` when the provider has a retrying execution strategy configured (for example, SQL Server `EnableRetryOnFailure`). Without provider retry configuration, this does not add transient retries. Operations inside the callback can run more than once, so make the callback safe to replay. See [EF Core connection resiliency](https://learn.microsoft.com/en-us/ef/core/miscellaneous/connection-resiliency):
 
 ```csharp
 public async Task UpdateWithRetryAsync(Guid id, Action<Order> update)
@@ -583,9 +583,9 @@ var orders = await dbContext.Orders
 | Behavior | Pros | Cons |
 |-----------|-------|-------|
 | SplitQuery | No cartesian explosion, better for large collections | Multiple round-trips, potential consistency issues |
-| SingleQuery | Single round-trip, transactional consistency | Cartesian explosion with multiple collections |
+| SingleQuery | One round-trip; avoids split-query interleaving between statements | Cartesian explosion with multiple collections |
 
-**Recommendation**: Default to `SplitQuery` globally, override with `AsSingleQuery()` for specific queries where single-query is known to be better.
+**Recommendation**: Default to `SplitQuery` globally, override with `AsSingleQuery()` for specific queries where single-query is known to be better. This is a repository preference; EF Core defaults to single-query behavior and documents the [split-query trade-offs](https://learn.microsoft.com/en-us/ef/core/querying/single-split-queries).
 
 ### When to Prefer SingleQuery
 
