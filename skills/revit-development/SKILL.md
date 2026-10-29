@@ -5,19 +5,24 @@ description: Use when developing, reviewing, testing, packaging, or migrating C#
 
 # Revit C# development
 
-Revit owns the runtime, API context and model. Apply general .NET practices within those boundaries. Keep upstream institutional advice unless a factual error or host constraint makes it inapplicable.
+Revit owns the runtime, API context and model. Preserve upstream practices within those boundaries.
+
+When creating/changing projects or build settings, load [project-structure](../project-structure/SKILL.md); when implementing C#, load [csharp-coding-standards](../csharp-coding-standards/SKILL.md). Revit host constraints govern their application.
+
+Build the smallest requested end-to-end feature first. Additional breakdowns, dependencies and supported targets require an explicit requirement.
 
 ## Establish the target before coding
 
-Read [versions and API migration](references/versions.md). Record **Revit year AND update/build**, host runtime, target framework, exact API reference version, minimum supported update, and deployment location. Revit 2025.5 and 2026.5 use .NET 10; earlier updates use .NET 8. Never select an API reference from the TFM alone. Compile and test each supported host/API combination; do not assume one DLL works across years.
+Read [versions and API migration](references/versions.md). Record: **Revit year/update, minimum supported update, exact API reference build, host runtime, TFM, deployment location and verification status**. Label assumed values. Revit 2025.5/2026.5 use .NET 10; earlier updates use .NET 8. Select references by API build, not TFM; verify each supported host/API combination.
 
 ## Keep the API boundary small
 
 Read [execution and performance](references/execution.md) for any model access, modeless UI, asynchronous work or transaction change.
 
-1. **Snapshot:** in valid Revit API context, filter once and extract only needed values into detached DTOs, including document identity, element identity, units and relevant original values.
-2. **Compute:** independent classes/DLLs operate on those DTOs. They reference neither RevitAPI nor RevitAPIUI and accept no `Document`, `Element`, `Parameter`, `XYZ`, collectors or lazy API-backed enumerables. CPU work may use bounded parallelism here.
-3. **Apply:** re-enter a valid API callback, verify the intended document and current values, resolve elements afresh, then apply only changed values in bounded, deliberate transactions.
+- **Read-only:** query → detached result → presentation. Filter in valid API context; extract only values the result needs.
+- **Modification:** snapshot → pure computation → revalidate → apply. Include document/element identity and original values for later resolution or modification. Re-enter valid API context, verify current state, then apply changed values in bounded transactions.
+
+Business logic belongs in independent classes/DLLs with no Revit references or live API objects (`Document`, `Element`, `Parameter`, `XYZ`, collectors/lazy projections). Pass detached values; bounded CPU parallelism belongs here.
 
 Main-thread execution alone is insufficient: WPF Dispatcher callbacks and continuations after `await` do not establish Revit API context. Modeless requests use `ExternalEvent`; raising it is a dispatch request, not immediate execution. API reads are not safe in `Task.Run`, actors, timers or `Parallel.ForEach`. Do not keep a transaction or group open across `await` or callbacks.
 
@@ -27,9 +32,9 @@ Read [packages and testing](references/ecosystem.md) before adding a wrapper, AP
 
 ## Required output when implementing
 
-- Target matrix with evidence and minimum update requirements.
-- Thin host adapter and pure computation boundary, including stale-input policy.
-- Transaction/undo/cancellation behavior and representative-model performance measurements.
-- Pure-logic tests plus per-host build/load/integration evidence. State unavailable host checks explicitly; structural validation is not a Revit execution test.
+- Target record, thin host adapter and pure business-logic tests.
+- For writes/deferred work: stale-input, transaction/undo and cancellation policies.
+- For performance claims: measurements on representative models.
+- Per target, report compilation, tests, host loading, UI execution and deployment separately as **passed, failed or unverified**. Deployment succeeds only after every required copy succeeds.
 
-Historical blog samples are explanations, not current API contracts. Prefer the exact release SDK/reference for member availability; use The Building Coder for experience and rationale. The dated source links in the references are the research starting point, not permission to guess future releases.
+Use the exact release SDK/reference for member availability and The Building Coder for experience and rationale. Historical samples and dated source links require rechecking before claiming support for later releases.

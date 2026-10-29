@@ -1,6 +1,6 @@
 ---
 name: modern-csharp-coding-standards
-description: Write modern, high-performance C# code using records, pattern matching, value objects, async/await, Span<T>/Memory<T>, and best-practice API design patterns. Emphasizes functional-style programming with C# 12+ features.
+description: Use when writing, refactoring or reviewing C# implementations, domain models, value objects or public APIs, including Revit add-ins and their independent business logic.
 user-invocable: false
 ---
 

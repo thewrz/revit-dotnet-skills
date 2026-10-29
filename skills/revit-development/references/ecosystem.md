@@ -26,8 +26,8 @@ Microsoft sources: [Central Package Management](https://learn.microsoft.com/en-u
 ## Verification layers
 
 - **Pure tests:** calculations, units at contract boundaries, tolerances, validation, unchanged-value elimination, idempotent plans and cancellation on detached DTOs. Run without loading Revit.
-- **Build matrix:** each API year and runtime configuration, including both sides of the 2025.5/2026.5 transition where supported. Check obsolete diagnostics and staged files.
-- **Host tests:** command registration, actual model edits, commit/rollback, failure handling, modeless dispatch, document switch/close while queued, stale snapshots, worksharing rejection, cancellation and undo behavior.
+- **Build matrix:** each supported API/runtime configuration, including both sides of supported runtime transitions. Switch targets without cleaning; inspect obsolete diagnostics and staged files.
+- **Host tests:** command registration and UI behavior; for implemented writes/modeless work, test commit/rollback, failure handling, document switch/close, stale snapshots, worksharing, cancellation and undo.
 - **Performance:** small and large representative models, with separate extraction/compute/apply timings and transaction counts. Test partial completion honestly; no brittle universal millisecond threshold.
 
 A CI restore/build on Linux validates neither Revit loading nor transactions. Host integration needs Windows and a properly licensed supported Revit environment. Testcontainers is useful for separate data services, not a containerized substitute for the Revit UI host.
