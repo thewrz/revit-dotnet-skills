@@ -20,11 +20,11 @@ Test business behavior through detached inputs and outputs without loading Revit
 
 An interface hiding a `Document` behind a method called by background business logic is still an API call. Snapshot the needed data first. Convert `XYZ`, transforms, geometry and units to domain-owned values where needed; never enumerate a collector/lazy projection after leaving API context. Preserve `long` IDs with document identity; IDs alone are not globally unique, and saved/cross-session workflows need an appropriate persistent identity such as `UniqueId` resolved inside the adapter.
 
-Before applying, re-evaluate every input and eligibility predicate behind the proposal, including document/element identity, original values, writability and worksharing permissions. Reject/recompute stale proposals. Bind previews, queued work and cancellation to their owning document/lifetime; invalidate them together. Snapshot chunks across callbacks are not atomic.
+A change proposal contains document/element identity, original inputs and proposed values. At Apply, compare all inputs that determined the proposal with current model values; recheck eligibility, writability and worksharing permissions. Reject/recompute stale proposals and skip unchanged writes. Bind previews, queued work and cancellation to their owning document/lifetime; invalidate them together. Snapshot chunks across callbacks are not atomic.
 
 ## Modeless and asynchronous work
 
-Create the external event in valid API context. UI/background callbacks submit detached requests; handlers resolve documents and validate model state. Give every request a terminal outcome, including superseded, rejected or cancelled work. Handle `Raise` results with a bounded FIFO or latest-request policy; repeated raises can coalesce. Consume requests once and release subscriptions/handlers with their owner.
+Create the external event in valid API context. UI/background callbacks submit detached requests; handlers resolve documents and validate model state. Track each request from queued through executing to one terminal outcome. Handle every `Raise` result; rejected, superseded and cancelled requests also complete. Use bounded FIFO or latest-request dispatch, consume requests once and release subscriptions/handlers with their owner.
 
 Keep each callback synchronous and bounded. A Task-based wrapper is a dispatcher, not an API worker thread. No `.Wait()`/`.Result` blocking on dispatch from Revit's thread; no `async void` API handler that loses its callback context. After asynchronous I/O or CPU computation, explicitly dispatch the apply phase again. WPF Dispatcher marshaling is only UI marshaling.
 

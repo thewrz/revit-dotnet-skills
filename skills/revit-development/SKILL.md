@@ -27,7 +27,7 @@ Read [versions and API migration](references/versions.md). Record **year/update,
 Read [execution and performance](references/execution.md) for any model access, modeless UI, asynchronous work or transaction change.
 
 - **Read-only:** query → detached snapshot → pure calculation → presentation. Filter in valid API context; extract only needed values.
-- **Modification:** snapshot → pure computation → revalidate → apply. Preserve document/element identity and every input behind the proposal. Re-enter valid API context, recheck its preconditions, then apply changed values in bounded transactions.
+- **Modification:** snapshot → pure computation → revalidate → apply. A proposal carries identity, expected input state and changed values. In API context, compare current state with that expectation and recheck eligibility before applying a bounded transaction.
 
 Domain contracts contain detached values, never `Document`, `Element`, `Parameter`, `XYZ` or lazy API projections. Bounded CPU parallelism belongs in the domain.
 

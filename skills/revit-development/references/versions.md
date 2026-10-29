@@ -2,17 +2,17 @@
 
 Verified 2026-10-29. Recheck Autodesk release notes before extending this table.
 
-| Revit installation | Host runtime | Target for new matching builds |
+| Revit installation | Host runtime | Build/compatibility policy |
 |---|---|---|
 | 2024 | .NET Framework 4.8 | `net48` |
 | 2025 before 2025.5 | .NET 8 | `net8.0-windows` |
 | 2026 before 2026.5 | .NET 8 | `net8.0-windows` |
-| 2025.5 / 2026.5 and subsequent updates in those lines | .NET 10 | `net10.0-windows` |
+| 2025.5 / 2026.5 and subsequent updates in those lines | .NET 10 | New matching builds: `net10.0-windows`; existing `net8.0-windows`: validate retention |
 | 2027 | .NET 10 | `net10.0-windows` |
 
 For older years, retrieve that year's SDK requirements; do not extrapolate `net48` indefinitely. Autodesk's [current transition requirements](https://help.autodesk.com/view/RVT/2025/ENU/?caas=caas/sfdcarticles/sfdcarticles/Revit--Requirements-for-products-affected-by-the-Microsoft--NET-10-transition.html), [2026.5 release notes](https://help.autodesk.com/view/RVT/2026/ENU/?guid=RevitReleaseNotes_2026updates_2026_5_html), and [2027 migration](https://help.autodesk.com/cloudhelp/2027/ENU/Revit-WhatsNew/files/GUID-8D7A4715-EAF8-4BD1-BE78-061F900D0BCE.htm) establish the runtime transitions.
 
-**Compatibility nuance:** Autodesk [says the 2025/2026 runtime update itself does not change the API](https://blog.autodesk.io/autodesk-desktop-products-2025-2026-net-10-updates/). Existing .NET 8 add-ins may continue working on those .NET 10 hosts; retargeting is needed when affected by runtime/dependency changes. Compare retaining the existing binary after validation on both runtime variants with retargeting; explain the compatibility evidence and maintenance tradeoff. A new .NET 10 binary cannot run on the earlier .NET 8 installation. Review Microsoft's [.NET 9](https://learn.microsoft.com/en-us/dotnet/core/compatibility/9.0) and [.NET 10](https://learn.microsoft.com/en-us/dotnet/core/compatibility/10.0) changes, including native dependencies and serialization.
+**Existing binaries:** First evaluate retaining the .NET 8 binary across both runtime variants; Autodesk [says the 2025/2026 runtime update itself does not change the API](https://blog.autodesk.io/autodesk-desktop-products-2025-2026-net-10-updates/). Retarget for required runtime/dependency changes and explain the evidence and maintenance tradeoff. A new .NET 10 binary cannot run on earlier .NET 8 installations. Review Microsoft's [.NET 9](https://learn.microsoft.com/en-us/dotnet/core/compatibility/9.0) and [.NET 10](https://learn.microsoft.com/en-us/dotnet/core/compatibility/10.0) changes and test the supported hosts before claiming compatibility.
 
 ## Build contract
 
