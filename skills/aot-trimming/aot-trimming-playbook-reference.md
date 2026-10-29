@@ -524,7 +524,7 @@ This is the same idea as snapshot testing: the baseline documents known debt and
 
 ### Feature switches (size + trim framework code)
 
-`InvariantGlobalization`, `EventSourceSupport`, `UseSystemResourceKeys`, `DebuggerSupport`, `StackTraceSupport` (.NET 8+), `UseNativeHttpHandler`, `MetadataUpdaterSupport`, `MetricsSupport`, `EnableUnsafeBinaryFormatterSerialization`, `UseSizeOptimizedLinq` (.NET 10+).
+`InvariantGlobalization`, `EventSourceSupport`, `UseSystemResourceKeys`, `DebuggerSupport`, `StackTraceSupport` (.NET 8+), `UseNativeHttpHandler`, `MetadataUpdaterSupport`, `MetricsSupport`, `UseSizeOptimizedLinq` (.NET 10+). The old `EnableUnsafeBinaryFormatterSerialization` switch was [removed in .NET 9](https://learn.microsoft.com/en-us/dotnet/core/compatibility/serialization/9.0/binaryformatter-removal).
 
 ---
 
