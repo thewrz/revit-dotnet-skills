@@ -18,7 +18,7 @@ The supplied DB references are 24.3.60 and 26.5.0. Public UI references are miss
 - Ribbon/manifest/command agree; presentation supports copying the report; staged outputs exclude host API binaries. Separate compilation/pure tests from unverified Revit/WPF execution.
 - Read tool traces to establish actual skill/reference use; do not infer use from artifact quality.
 
-Three consecutive fresh passing runs on the same final skill revision are the stopping condition. This is a regression signal, not a statistical reliability guarantee. A failure resets the streak. Preserve every sample and distinguish harness failures from generated-code failures.
+The initial plan called for three consecutive passing runs. Following the user's generic-guidance correction, freeze the lean candidate for five fresh samples (`iteration5`, `repeat1`–`repeat4`) and report the full distribution instead of sampling until a favorable streak. Demonstrate at least one untouched output satisfying the requested build/architecture conditions, independently verify behavior, and retain all failures. Do not add Revit rules for individual benchmark arithmetic defects. This is a qualitative regression experiment, not a reliability guarantee.
 
 ## Work log
 
@@ -26,8 +26,8 @@ Three consecutive fresh passing runs on the same final skill revision are the st
 - [x] Run unchanged `c608c02` baseline; record concrete failures.
 - [x] Research primary Microsoft/Autodesk sources and exact reference metadata.
 - [x] Make the smallest supported wording change, validate and commit it.
-- [ ] Repeat blind generation, independent builds/tests and adjudication until the stopping condition holds.
-- [ ] Record all results, word counts, remaining host limits and reproducible commands.
+- [x] Finish the fixed blind sample and independently verify builds, boundaries and behavior; report successes and failures together.
+- [x] Record all results, word counts, remaining host limits and reproducible commands.
 
 Artifacts: `/home/adam/github/revit-dotnet-skills-reviews/2026-10-29-iterations/`. Each run records revision, model/effort, prompt hash, 40-skill catalog, tool events and untouched source. Private authentication is deleted after each run and never copied into artifacts.
 

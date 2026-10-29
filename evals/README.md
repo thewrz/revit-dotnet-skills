@@ -1,6 +1,10 @@
 # Revit plugin smoke experiment
 
-This spike tests the combined PR #2/#3/#4 content without applying the later review recommendations. It is associated with existing issue #1. The test branch contains three explicit merges from the upstream base; before these evaluation files were added, its tree exactly matched PR #4.
+The current Codex multi-version experiment uses [this outcome prompt](data-device-multiversion/prompt.txt); its [results](data-device-multiversion/RESULTS.md) report the full five-run sample against the final lean wording.
+
+## Original Claude Code smoke procedure
+
+The initial spike tested the combined PR #2/#3/#4 content before later review recommendations. It is associated with existing issue #1. The test branch contains three explicit merges from the upstream base; before these evaluation files were added, its tree exactly matched PR #4.
 
 The native Claude Code plugin evaluator runs the same natural-language add-in request in fresh contexts with and without the plugin. No conversation history, handoff, project instructions, scaffold, or extra system prompt is supplied. Run one sample per arm at high effort; this is a smoke experiment, not a reliability estimate. Do not revise the plugin or prompt midway to make the result pass.
 
