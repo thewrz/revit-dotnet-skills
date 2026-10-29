@@ -88,7 +88,7 @@ public class EmailService
 {
     private readonly SmtpSettings _settings;
 
-    // IOptions<T> - singleton, read once at startup
+    // IOptions<T> caches the default value on first access
     public EmailService(IOptions<SmtpSettings> options)
     {
         _settings = options.Value;
@@ -129,10 +129,10 @@ public class SmtpSettings
 builder.Services.AddOptions<SmtpSettings>()
     .BindConfiguration(SmtpSettings.SectionName)
     .ValidateDataAnnotations()  // Enable attribute-based validation
-    .ValidateOnStart();         // Validate immediately at startup
+    .ValidateOnStart();         // Register validation for Generic Host startup
 ```
 
-**Key Point:** `.ValidateOnStart()` is critical. Without it, validation only runs when the options are first accessed.
+**Startup ownership:** `.ValidateOnStart()` registers validation that a started Generic Host invokes. `BuildServiceProvider()` alone does not run it. With an owned provider, invoke the registered [`IStartupValidator.Validate()`](https://learn.microsoft.com/en-us/dotnet/api/microsoft.extensions.options.istartupvalidator?view=net-10.0), or explicitly resolve and validate every required default/named option, before exposing commands or services. Dispose owned services if initialization fails.
 
 ---
 
@@ -277,7 +277,7 @@ public class MyService
 {
     public MyService(IOptions<SmtpSettings> options)
     {
-        var host = options.Value.Host; // Validated at startup
+        var host = options.Value.Host; // Validated by the initialization path above
     }
 }
 ```
@@ -295,7 +295,7 @@ public class MyService
     }
 }
 
-// GOOD: Validation at startup via IValidateOptions + ValidateOnStart()
+// GOOD: IValidateOptions + ValidateOnStart(), invoked by the startup owner
 ```
 
 ### 3. Forgetting ValidateOnStart
@@ -305,7 +305,7 @@ public class MyService
 builder.Services.AddOptions<Settings>()
     .ValidateDataAnnotations(); // Missing ValidateOnStart!
 
-// GOOD: Fails immediately if invalid
+// GOOD: Fails when Generic Host starts if invalid
 builder.Services.AddOptions<Settings>()
     .ValidateDataAnnotations()
     .ValidateOnStart();
@@ -337,7 +337,7 @@ public ValidateOptionsResult Validate(string? name, Settings options)
 
 | Principle | Implementation |
 |-----------|----------------|
-| Fail fast | `.ValidateOnStart()` |
+| Fail fast | `.ValidateOnStart()` plus Generic Host startup or explicit owned-provider validation |
 | Strongly-typed | Bind to POCO classes |
 | Simple validation | Data Annotations |
 | Complex validation | `IValidateOptions<T>` |

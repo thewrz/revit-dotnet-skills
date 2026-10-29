@@ -28,7 +28,7 @@ ServiceDefaults is a shared project that provides common configuration for all s
 - **Service Discovery** - Automatic service resolution
 - **HTTP Resilience** - Retry and circuit breaker policies
 
-Every service references this project and calls `AddServiceDefaults()`.
+Services sharing this policy reference the project and call `AddServiceDefaults()`. The example below uses service discovery. For the [explicit-configuration profile](../aspire-configuration/SKILL.md), omit the discovery package and both `AddServiceDiscovery()` calls, and consume configured endpoint URLs. [Service defaults are customizable](https://aspire.dev/get-started/csharp-service-defaults/); keep the other applicable defaults.
 
 ---
 

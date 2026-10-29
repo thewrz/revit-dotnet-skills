@@ -1,6 +1,6 @@
 ---
 name: package-management
-description: Manage NuGet packages using Central Package Management (CPM) and dotnet CLI commands. Never edit XML directly - use dotnet add/remove/list commands. Use shared version variables for related packages.
+description: Use when adding, updating or troubleshooting NuGet references, conditional package assets, Central Package Management (CPM), or shared package versions.
 user-invocable: false
 ---
 
@@ -19,26 +19,19 @@ Use this skill when:
 
 ---
 
-## Golden Rule: Never Edit XML Directly
+## Preserve the reference contract
 
-**Always use `dotnet` CLI commands to manage packages.** Never manually edit `.csproj` or `Directory.Packages.props` files.
+Prefer `dotnet` CLI commands for ordinary package changes. Update existing references in place, preserving conditions, asset metadata and shared version properties. When the CLI cannot express the required selection or metadata, edit the owning `.csproj` or `Directory.Packages.props` XML directly.
 
 ```bash
-# DO: Use CLI commands
+# Add or update an existing reference
 dotnet add package Newtonsoft.Json
+# Remove only when the dependency is no longer needed
 dotnet remove package Newtonsoft.Json
 dotnet list package --outdated
-
-# DON'T: Edit XML directly
-# <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
 ```
 
-**Why:**
-- CLI validates package exists and resolves correct version
-- Handles transitive dependencies correctly
-- Updates lock files if present
-- Avoids typos and malformed XML
-- Works correctly with CPM
+Inspect the diff, restore/build every affected configuration and check evaluated dependency assets. A successful restore verifies package resolution, not preservation of deployment policy. See [CLI updates](https://learn.microsoft.com/en-us/dotnet/core/tools/dotnet-package-add) and [conditional references and asset controls](https://learn.microsoft.com/en-us/nuget/consume-packages/package-references-in-project-files).
 
 ---
 
@@ -250,8 +243,7 @@ dotnet list package --deprecated
 # Then restore to apply
 dotnet restore
 
-# Without CPM: Remove and add with new version
-dotnet remove package Serilog
+# Without CPM: Update the existing reference in place
 dotnet add package Serilog --version 4.1.0
 
 # Or use dotnet-outdated tool (recommended)
@@ -398,14 +390,6 @@ Then commit `packages.lock.json` files.
 ---
 
 ## Anti-Patterns
-
-### Don't: Edit XML Directly
-
-```xml
-<!-- BAD: Manual XML editing -->
-<PackageReference Include="Typo.Package" Version="1.0.0" />
-<!-- Package might not exist! CLI would catch this. -->
-```
 
 ### Don't: Inline Versions with CPM
 
