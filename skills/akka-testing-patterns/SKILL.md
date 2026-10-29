@@ -4,6 +4,9 @@ description: Write unit and integration tests for Akka.NET actors using modern A
 user-invocable: false
 ---
 
+> **Revit scope:** For Revit work, first read [revit-development](../revit-development/SKILL.md). Apply this skill only within the selected host/runtime and API-context boundaries; server examples concern companion services. Institutional preferences below remain intentional.
+
+
 # Akka.NET Testing Patterns
 
 ## When to Use This Skill

@@ -4,6 +4,9 @@ description: Create and maintain AGENTS.md / CLAUDE.md snippet indexes that rout
 user-invocable: false
 ---
 
+> **Revit scope:** For Revit work, first read [revit-development](../revit-development/SKILL.md). Apply this skill only within the selected host/runtime and API-context boundaries; server examples concern companion services. Institutional preferences below remain intentional.
+
+
 # Maintaining Skill Index Snippets (AGENTS.md / CLAUDE.md)
 
 ## When to Use This Skill

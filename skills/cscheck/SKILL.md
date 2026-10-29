@@ -3,6 +3,9 @@ name: cscheck
 description: Write and simplify C# property-based, model-based, and executable specification tests with CsCheck. Use for generators, shrinking, stateful command sequences, Spec guards and rules, implementation conformance, or replaying generated failures.
 ---
 
+> **Revit scope:** For Revit work, first read [revit-development](../revit-development/SKILL.md). Apply this skill only within the selected host/runtime and API-context boundaries; server examples concern companion services. Institutional preferences below remain intentional.
+
+
 # CsCheck
 
 Use CsCheck to explore inputs and action sequences; keep the application's contract visible in the test.

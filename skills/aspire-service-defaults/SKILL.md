@@ -4,6 +4,9 @@ description: Create a shared ServiceDefaults project for Aspire applications. Ce
 user-invocable: false
 ---
 
+> **Revit scope:** For Revit work, first read [revit-development](../revit-development/SKILL.md). Apply this skill only within the selected host/runtime and API-context boundaries; server examples concern companion services. Institutional preferences below remain intentional.
+
+
 # Aspire Service Defaults
 
 ## When to Use This Skill

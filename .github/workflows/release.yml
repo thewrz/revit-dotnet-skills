@@ -6,13 +6,24 @@ on:
     tags:
       - 'v*'
   pull_request:
-    branches: [master]
+    # Include stacked draft branches as well as the default branch.
+
+permissions:
+  contents: read
 
 jobs:
   validate:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+
+      - name: Validate fork packaging
+        run: |
+          python -m unittest discover -s tests -v
+          bash scripts/generate-skill-index-snippets.sh --update-readme
+          git diff --exit-code -- README.md
 
       - name: Validate JSON syntax
         run: |
@@ -109,9 +120,10 @@ jobs:
     permissions:
       contents: write
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
         with:
           fetch-depth: 0
+          persist-credentials: false
 
       - name: Verify tag matches manifest version
         run: |
@@ -163,7 +175,7 @@ jobs:
             if [ -d "$category" ]; then
               category_name=$(basename "$category")
               echo "**${category_name}**" >> notes.md
-              for skill in "$category"*/SKILL.md; do
+              for skill in "$category"SKILL.md; do
                 if [ -f "$skill" ]; then
                   skill_name=$(grep "^name:" "$skill" | sed 's/^name: *//')
                   skill_desc=$(grep "^description:" "$skill" | sed 's/^description: *//')
@@ -194,14 +206,14 @@ jobs:
 
           ```bash
           # Claude Code - add the marketplace
-          /plugin marketplace add Aaronontheweb/dotnet-skills
-          /plugin install dotnet-skills
+          /plugin marketplace add thewrz/revit-dotnet-skills
+          /plugin install revit-dotnet-skills
           ```
 
           ```bash
           # Codex - add the marketplace, then install the plugin
-          codex plugin marketplace add Aaronontheweb/dotnet-skills
-          codex plugin add dotnet-skills@dotnet-skills
+          codex plugin marketplace add thewrz/revit-dotnet-skills
+          codex plugin add revit-dotnet-skills@revit-dotnet-skills
           ```
           INSTALL
 
@@ -214,7 +226,6 @@ jobs:
           fi
 
       - name: Create release
-        uses: softprops/action-gh-release@v1
-        with:
-          body_path: notes.md
-          generate_release_notes: false
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh release create "$GITHUB_REF_NAME" --verify-tag --notes-file notes.md

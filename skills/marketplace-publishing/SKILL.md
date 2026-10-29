@@ -3,6 +3,9 @@ name: marketplace-publishing
 description: Workflow for publishing skills and agents to the dotnet-skills Claude Code marketplace. Covers adding new content, updating plugin.json, validation, and release tagging.
 ---
 
+> **Revit scope:** For Revit work, first read [revit-development](../revit-development/SKILL.md). Apply this skill only within the selected host/runtime and API-context boundaries; server examples concern companion services. Institutional preferences below remain intentional.
+
+
 # Marketplace Publishing Workflow
 
 This skill documents how to publish skills and agents to the dotnet-skills Claude Code marketplace.
