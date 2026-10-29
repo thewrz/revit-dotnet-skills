@@ -8,11 +8,11 @@ Research checked: 2026-10-29. Use the [target record](versions.md): Revit update
 |---|---|---|
 | Edit running business/command methods | Visual Studio Hot Reload / Edit and Continue | Patches supported edits; existing state is retained. |
 | Refresh existing UI or caches after an edit | Explicit refresh; optionally `MetadataUpdateHandler` | Requires re-execution and verified notification delivery. |
-| Replace a rebuilt implementation and dependencies | Optional development loader | Separate lifecycle; unload and dependency identity must be proven. |
+| Terminal build and reload without a debugger | Development assembly replacement | Stage a complete generation; verify activation and collection. |
 
-Start with a small debugger probe before adding infrastructure. Use a supported Debug configuration, matching loaded DLL/PDB/source, managed-only debugging and enabled Hot Reload. Check evaluated settings for custom configurations; a `Debug` prefix is not proof. Launching Revit under the debugger and attaching later are different scenarios. Follow [Microsoft's setup/support guidance](https://learn.microsoft.com/en-us/visualstudio/debugger/hot-reload) and inspect the Hot Reload output. `dotnet watch` does not automatically patch an arbitrary running Revit process.
+For debugger edits, provide a supported Debug launch configuration, matching loaded DLL/PDB/source, managed-only debugging and enabled Hot Reload. Check evaluated settings and [Microsoft's setup/support guidance](https://learn.microsoft.com/en-us/visualstudio/debugger/hot-reload). Verify attach separately against its [startup prerequisites](https://learn.microsoft.com/en-us/visualstudio/debugger/supported-code-changes-csharp#unsupported-scenarios). For terminal builds, implement explicit activation of the staged output; `dotnet build`/`watch` alone does not patch an arbitrary running Revit process.
 
-[The Building Coder](https://jeremytammik.github.io/tbc/a/1920_apply_code_changes.html) reports successful C# edits; its [2024 follow-up](https://blog.autodesk.io/net-core-c4r-views-and-interactive-hot-reload/) highlights interactive Revit/Dynamo demonstrations. These establish useful techniques, not support for every host/update or XAML workflow.
+[The Building Coder's C# experiment](https://jeremytammik.github.io/tbc/a/1920_apply_code_changes.html) and [Revit/Dynamo demonstrations](https://blog.autodesk.io/net-core-c4r-views-and-interactive-hot-reload/) motivate small capability probes. Verify the actual host/update and XAML workflow separately.
 
 ## Make changed behavior reachable
 
@@ -28,10 +28,10 @@ Callbacks do not establish Revit API context. Dispatch presentation to WPF; queu
 
 Keep the host/contract stable; share the actual host API assemblies. Stage each payload with its private dependencies, symbols and dependency metadata. Exercise the same business implementation as production. Dependency isolation is not unloadability.
 
-[Unloading is cooperative](https://learn.microsoft.com/en-us/dotnet/standard/assembly/unloadability). Quiesce work and release subscriptions, UI callbacks, tasks and retained objects before checking a weak context reference from outside payload frames. Retained exceptions/types can also root a generation: preserve failure diagnostics as detached host-owned data before probing. Distinguish a recoverable busy/rejected attempt from a failed shutdown or proven unreleased context; a busy window alone should not poison later retries. Bound dispatch waits and complete failed requests; see [execution](execution.md).
+[Unloading is cooperative](https://learn.microsoft.com/en-us/dotnet/standard/assembly/unloadability). Quiesce work and release subscriptions, UI callbacks, tasks and retained objects before checking a weak context reference outside payload frames. Retained exceptions/types also root generations: detach failure diagnostics before probing. Separate recoverable busy/rejected attempts from failed shutdown/unload. Expire unstarted requests; report already-started work accurately. Bound waits and expose a definitive result through [the dispatch contract](execution.md).
 
 ## Deliver and verify the loop
 
-For a hot-reload request, configure the chosen development workflow and implement its required refresh/cleanup path. Deliver exact edit → apply → invoke steps and a restart fallback for unsupported edits. Reuse established tooling; introduce a custom loader only for a demonstrated gap.
+Deliver working commands/configuration for every requested workflow: terminal build → stage → activate, or debugger launch → edit/apply → refresh. Exercise the production business implementation and its cleanup path. Reuse established tooling; state restart boundaries for unsupported changes.
 
-Verify changed behavior in Revit: Core edits, repeated updates, UI refresh, failure recovery and clean shutdown. For replacement, record artifact identity and collection; for Hot Reload, record applied-edit diagnostics and observed behavior—disk hashes alone do not prove an in-memory patch. Finish with a cold-start production-path check. Report builds, standalone tests and host execution separately; label host checks unverified when Revit is unavailable.
+For replacement, run portable lifecycle tests against the production loader and payload: changed behavior, collection and failure recovery. In Revit, verify repeated edits, UI refresh, shutdown and a cold production start. For debugger Hot Reload, record applied-edit diagnostics and changed behavior; disk hashes prove only disk changes. Report builds, standalone tests and host execution separately; label unavailable host checks unverified.

@@ -31,7 +31,7 @@ Read [execution and performance](references/execution.md) for any model access, 
 
 Domain contracts contain detached values, never `Document`, `Element`, `Parameter`, `XYZ` or lazy API projections. Bounded CPU parallelism belongs in the domain.
 
-API access requires Revit context, not just the main thread. WPF dispatch, workers and continuations after `await` do not establish it. Modeless work uses `ExternalEvent` (queued, not immediate). Never span `await`/callbacks with transactions/groups.
+Modeless callbacks enqueue detached intent through `ExternalEvent`. Resolve and validate Revit objects inside API callbacks; WPF dispatch, workers and `await` continuations supply no API context. Keep transactions/groups within one callback.
 
 For debugging or implementing hot-reload capability, read [live development](references/live-development.md), including its implementation and verification requirements.
 
@@ -41,7 +41,7 @@ Read [packages and testing](references/ecosystem.md) before adding dependencies.
 
 ## Required output when implementing
 
-- Target record, thin host adapter and verification of the independent business logic.
+- Target record, declared command transaction modes and verified independent business logic.
 - For writes/deferred work: stale-input, transaction/undo and cancellation policies.
 - For performance claims: measurements on representative models.
 - Build every requested target. Use compiler diagnostics to correct code, references and target settings, then rebuild. Report compilation, tests, host/UI execution and deployment separately as **passed, failed or unverified**. Deployment succeeds only after every required copy succeeds.
