@@ -20,7 +20,7 @@ Test business behavior through detached inputs and outputs without loading Revit
 
 An interface hiding a `Document` behind a method called by background business logic is still an API call. Snapshot the needed data first. Convert `XYZ`, transforms, geometry and units to domain-owned values where needed; never enumerate a collector/lazy projection after leaving API context. Preserve `long` IDs with document identity; IDs alone are not globally unique, and saved/cross-session workflows need an appropriate persistent identity such as `UniqueId` resolved inside the adapter.
 
-Revalidate the originating document, element identity/eligibility, original values, parameter writability and worksharing permissions before applying. Reject/recompute stale proposals. Bind previews and queued work to the same document and lifetime; invalidate them together. Across callbacks, detect intervening changes: multiple snapshot chunks are not atomic.
+Before applying, re-evaluate every input and eligibility predicate behind the proposal, including document/element identity, original values, writability and worksharing permissions. Reject/recompute stale proposals. Bind previews, queued work and cancellation to their owning document/lifetime; invalidate them together. Snapshot chunks across callbacks are not atomic.
 
 ## Modeless and asynchronous work
 

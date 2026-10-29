@@ -1,6 +1,6 @@
 ---
 name: revit-development
-description: Use when developing, reviewing, testing, packaging, debugging, hot-reloading, or migrating C# Revit add-ins, modeless tools, Revit API integrations, or multi-version Revit builds.
+description: Use when planning, implementing or reviewing Revit C# add-ins, including API/runtime compatibility, installation, modeless UI, performance and hot-reload workflows.
 ---
 
 # Revit C# development
@@ -27,7 +27,7 @@ Read [versions and API migration](references/versions.md). Record **year/update,
 Read [execution and performance](references/execution.md) for any model access, modeless UI, asynchronous work or transaction change.
 
 - **Read-only:** query → detached snapshot → pure calculation → presentation. Filter in valid API context; extract only needed values.
-- **Modification:** snapshot → pure computation → revalidate → apply. Include document/element identity and original values for later resolution or modification. Re-enter valid API context, verify current state, then apply changed values in bounded transactions.
+- **Modification:** snapshot → pure computation → revalidate → apply. Preserve document/element identity and every input behind the proposal. Re-enter valid API context, recheck its preconditions, then apply changed values in bounded transactions.
 
 Domain contracts contain detached values, never `Document`, `Element`, `Parameter`, `XYZ` or lazy API projections. Bounded CPU parallelism belongs in the domain.
 

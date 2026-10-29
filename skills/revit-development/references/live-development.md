@@ -26,12 +26,12 @@ Callbacks do not establish Revit API context. Dispatch presentation to WPF; queu
 
 ## If a custom replacement loader is justified
 
-Keep the host/contract stable; share the actual host API assemblies. Stage each payload with its private dependencies, symbols and dependency metadata. Exercise the same business implementation as production. Dependency isolation is not unloadability.
+Keep the host/contract stable; share the actual host API assemblies. Stage each payload with its private dependencies, symbols and dependency metadata. Exercise the production business implementation against current detached state before activation; retain the working generation if activation fails. Dependency isolation is not unloadability.
 
 [Unloading is cooperative](https://learn.microsoft.com/en-us/dotnet/standard/assembly/unloadability). Quiesce work and release subscriptions, UI callbacks, tasks and retained objects before checking a weak context reference outside payload frames. Retained exceptions/types also root generations: detach failure diagnostics before probing. Separate recoverable busy/rejected attempts from failed shutdown/unload. Expire unstarted requests; report already-started work accurately. Bound waits and expose a definitive result through [the dispatch contract](execution.md).
 
 ## Deliver and verify the loop
 
-Deliver working commands/configuration for every requested workflow: terminal build → stage → activate, or debugger launch → edit/apply → refresh. Exercise the production business implementation and its cleanup path. Reuse established tooling; state restart boundaries for unsupported changes.
+Exercise the documented commands from clean outputs: terminal build → stage → activate, or debugger launch → edit/apply → refresh. Verify the running generation uses the newly built production implementation. Reuse established tooling; state restart boundaries.
 
 For replacement, run portable lifecycle tests against the production loader and payload: changed behavior, collection and failure recovery. In Revit, verify repeated edits, UI refresh, shutdown and a cold production start. For debugger Hot Reload, record applied-edit diagnostics and changed behavior; disk hashes prove only disk changes. Report builds, standalone tests and host execution separately; label unavailable host checks unverified.
