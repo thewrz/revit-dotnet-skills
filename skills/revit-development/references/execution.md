@@ -8,9 +8,9 @@ The Building Coder's [thread-safety discussion](https://jeremytammik.github.io/t
 
 ## Snapshot → compute → present/apply
 
-Recommended assembly responsibilities:
+Component responsibilities (not a required assembly layout):
 
-| Assembly | Inputs/outputs | Dependencies |
+| Component | Inputs/outputs | Dependencies |
 |---|---|---|
 | Domain | Immutable snapshots → summaries, reports or proposed changes | Plain .NET; no Autodesk/UI types |
 | Revit adapter per API target | Model → snapshots; validated changes → model | Matching Revit API, Domain |
@@ -30,7 +30,7 @@ Keep each callback synchronous and bounded. A Task-based wrapper is a dispatcher
 
 Check cancellation before dispatch and between batches. Cancellation cannot preempt arbitrary native API work. Stop scheduling, roll back the active uncommitted batch where appropriate, and report already committed batches accurately. Throttle progress; neither a progress event nor a timer may query the model outside context.
 
-Sources: Autodesk [External Events](https://help.autodesk.com/cloudhelp/2025/ENU/Revit-API/files/Revit_API_Developers_Guide/Introduction/Add_In_Integration/External_Events_html.html); Tammik [API context and polling](https://jeremytammik.github.io/tbc/a/1383_external_event_10_year.html). Queue, stale-input and cancellation policies above are this fork's engineering guidance inferred from deferred execution, not built-in ExternalEvent guarantees.
+Sources: Autodesk [ExternalEvent.Raise](https://help.autodesk.com/cloudhelp/2026/ENU/Revit-API-MainReference/files/html/13bf4411-c400-dcd2-458c-7f09357d9ecb.htm); Tammik [API context and polling](https://jeremytammik.github.io/tbc/a/1383_external_event_10_year.html). Queue, stale-input and cancellation policies above are this fork's engineering guidance inferred from deferred execution, not built-in ExternalEvent guarantees.
 
 ## Transactions and regeneration
 

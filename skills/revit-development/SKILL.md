@@ -1,6 +1,6 @@
 ---
 name: revit-development
-description: Use when developing, reviewing, testing, packaging, or migrating C# Revit add-ins, modeless tools, Revit API integrations, or multi-version Revit builds.
+description: Use when developing, reviewing, testing, packaging, debugging, hot-reloading, or migrating C# Revit add-ins, modeless tools, Revit API integrations, or multi-version Revit builds.
 ---
 
 # Revit C# development
@@ -9,14 +9,14 @@ Revit owns the runtime, API context and model. Preserve upstream practices withi
 
 For project/build changes, load [project-structure](../project-structure/SKILL.md); for C#, load [csharp-coding-standards](../csharp-coding-standards/SKILL.md). Apply Revit host constraints.
 
-Keep business logic in an independently buildable core:
+Keep business logic independent of the host:
 
 ```text
 Core           plain .NET types and logic; no Autodesk/WPF references
 RevitAdapter   → Core; API access, commands and presentation
 ```
 
-Commands and UI delegate business decisions to Core. Build and test Core without Revit before integrating the adapter.
+Commands and UI delegate business decisions to Core. Test production logic without Revit/UI; a separate project or shared source can enforce this boundary without requiring another deployed DLL.
 
 ## Establish the target before coding
 
@@ -33,9 +33,11 @@ Domain contracts contain detached values, never `Document`, `Element`, `Paramete
 
 API access requires Revit context, not just the main thread. WPF dispatch, workers and continuations after `await` do not establish it. Modeless work uses `ExternalEvent` (queued, not immediate). Never span `await`/callbacks with transactions/groups.
 
+For debugging or implementing hot-reload capability, read [live development](references/live-development.md), including its implementation and verification requirements.
+
 ## Select dependencies deliberately
 
-Read [packages and testing](references/ecosystem.md) before adding a wrapper, API package or test harness. Pin exact package versions per host; inspect their assets and transitive dependencies. Revit supplies its API DLLs; do not ship private copies. No trimmed/Native AOT/self-contained publishing for the in-process add-in. Separate companion executables have their own deployment choices.
+Read [packages and testing](references/ecosystem.md) before adding dependencies. Minimize and justify runtime dependencies without imposing a DLL count. For manifests, bundles or distribution, read [packaging and loading](references/packaging.md). Exclude verified host-provided and build-only assets; retain required runtime dependencies. No trimmed/Native AOT/self-contained publishing for the in-process add-in.
 
 ## Required output when implementing
 

@@ -39,10 +39,4 @@ Sources: [Autodesk 2024 API changes](https://blog.autodesk.io/whats-new-in-the-r
 
 ## Packaging and loading
 
-Revit supplies `RevitAPI.dll` and public `RevitAPIUI.dll` (not internal `RevitUIAPI.dll`). Set `<Private>false</Private>` on assembly references. `PrivateAssets="all"` controls transitive NuGet propagation, not DLL copying; inspect staged output.
-
-For reference-only NuGet packages, use `ExcludeAssets="runtime"` together with `PrivateAssets="all"` on each API `PackageReference`, and verify the package's build targets do not copy the files separately. Add a deployment check that rejects staged `RevitAPI*.dll`; compile success alone does not verify packaging.
-
-Deploy separate outputs/manifests per year/update contract. [2026 already supports opt-in load-context isolation](https://help.autodesk.com/cloudhelp/2026/ENU/Revit-API/files/Revit_API_Developers_Guide/Introduction/Add_In_Integration/Revit_API_Revit_API_Developers_Guide_Introduction_Add_In_Integration_Add_in_Dependency_Isolation_html.html) through `UseRevitContext=false`; defaults matter. [2027 changes machine-wide discovery to Program Files](https://blog.autodesk.io/revit-2027-sdk-net-10-api-changes-and-additions/); do not backport its path. Isolation does not grant API thread safety.
-
-Do not publish the add-in as a self-contained app, trimmed assembly or Native AOT library. The host must discover and load managed entry points. Microsoft's [Native AOT limitations](https://learn.microsoft.com/en-us/dotnet/core/deploying/native-aot/) are relevant to separate executables, not a replacement Revit loading contract.
+Read [packaging and loading](packaging.md) for runtime assets, `.addin`/bundle discovery, year-specific installation paths and load-context isolation. Deploy outputs and manifests matching each supported year/update contract; compilation alone does not verify installation.

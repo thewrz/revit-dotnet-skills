@@ -17,7 +17,7 @@ Do not add Toolkit and Revit.Async together by default; choose a dispatch abstra
 ## Dependency review
 
 1. Verify package identity against publisher repository and NuGet metadata; pin exact versions/lock restore.
-2. Inspect transitive dependencies, native assets, WPF support and assemblies already loaded by Revit. Keep host-provided API references out of deployment.
+2. Inspect transitive dependencies, native assets, WPF support and [packaging requirements](packaging.md). Omit dependencies only when the supported host/runtime guarantees them; another add-in loading a copy is not such a guarantee.
 3. Run the installed SDK's NuGet vulnerability audit for each target (use its documented CLI syntax), and inspect package licenses. Do not equate a clean audit with host compatibility.
 4. Test installation and assembly loading on each supported host/update combination, including other required add-ins. Do not change Revit's process-wide binding/runtime configuration to hide a conflict.
 
