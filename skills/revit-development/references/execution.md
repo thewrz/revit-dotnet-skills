@@ -6,15 +6,17 @@ Use `IExternalCommand.Execute`, an appropriate Revit callback, or `IExternalEven
 
 The Building Coder's [thread-safety discussion](https://jeremytammik.github.io/tbc/a/1244_no_multithreading.htm) includes Autodesk API lead Arnošt Löbel's explanation: even reads may expand internal element state. Its addendum explicitly exempts `ExternalEvent.Raise`. Therefore copying a list of `Element` wrappers does not make parameter reads safe on workers. Copy numeric/string/domain values in the callback instead.
 
-## Snapshot → compute → apply
+## Snapshot → compute → present/apply
 
 Recommended assembly responsibilities:
 
 | Assembly | Inputs/outputs | Dependencies |
 |---|---|---|
-| Domain | Immutable snapshots → proposed changes and validation results | Plain .NET; no Autodesk/UI types |
+| Domain | Immutable snapshots → summaries, reports or proposed changes | Plain .NET; no Autodesk/UI types |
 | Revit adapter per API target | Model → snapshots; validated changes → model | Matching Revit API, Domain |
 | UI/orchestration | User intent, progress, cancellation, results | Domain contracts and dispatch abstraction |
+
+Read-only tools also need this boundary: grouping, rounding and report formatting are domain work, not window constructors or command handlers. Test empty inputs, boundary quantities and large identities without loading Revit/WPF. Prefer integer/decimal arithmetic for exact quantity rules; binary floating-point followed by ceiling can overcount at integral boundaries.
 
 An interface hiding a `Document` behind a method called by background business logic is still an API call. Snapshot the needed data first. Convert `XYZ`, transforms, geometry and units to domain-owned values where needed; never enumerate a collector/lazy projection after leaving API context. Preserve `long` IDs with document identity; IDs alone are not globally unique, and saved/cross-session workflows need an appropriate persistent identity such as `UniqueId` resolved inside the adapter.
 

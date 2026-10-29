@@ -7,22 +7,22 @@ description: Use when developing, reviewing, testing, packaging, or migrating C#
 
 Revit owns the runtime, API context and model. Preserve upstream practices within those boundaries.
 
-When creating/changing projects or build settings, load [project-structure](../project-structure/SKILL.md); when implementing C#, load [csharp-coding-standards](../csharp-coding-standards/SKILL.md). Revit host constraints govern their application.
+For project/build changes, load [project-structure](../project-structure/SKILL.md); for C#, load [csharp-coding-standards](../csharp-coding-standards/SKILL.md). Apply Revit host constraints.
 
-Build the smallest requested end-to-end feature first. Additional breakdowns, dependencies and supported targets require an explicit requirement.
+Keep the requested scope; preserve calculation and verification boundaries even for small tools.
 
 ## Establish the target before coding
 
-Read [versions and API migration](references/versions.md). Record: **Revit year/update, minimum supported update, exact API reference build, host runtime, TFM, deployment location and verification status**. Label assumed values. Revit 2025.5/2026.5 use .NET 10; earlier updates use .NET 8. Select references by API build, not TFM; verify each supported host/API combination.
+Read [versions and API migration](references/versions.md). Inspect assemblies before choosing targets; folder years/package labels are insufficient. Record **year/update, minimum supported update, each API reference build, runtime, TFM and deployment location**; label assumptions. Revit 2025.5/2026.5 use .NET 10; earlier updates use .NET 8. Verify each supported host/API combination.
 
 ## Keep the API boundary small
 
 Read [execution and performance](references/execution.md) for any model access, modeless UI, asynchronous work or transaction change.
 
-- **Read-only:** query → detached result → presentation. Filter in valid API context; extract only values the result needs.
+- **Read-only:** query → detached snapshot → pure calculation → presentation. Filter in valid API context; extract only needed values.
 - **Modification:** snapshot → pure computation → revalidate → apply. Include document/element identity and original values for later resolution or modification. Re-enter valid API context, verify current state, then apply changed values in bounded transactions.
 
-Business logic belongs in independent classes/DLLs with no Revit references or live API objects (`Document`, `Element`, `Parameter`, `XYZ`, collectors/lazy projections). Pass detached values; bounded CPU parallelism belongs here.
+Calculations and report formatting belong in plain .NET classes/DLLs, testable without Revit or WPF; UI renders their results. Contracts contain detached values, never `Document`, `Element`, `Parameter`, `XYZ` or lazy API projections. Bounded CPU parallelism belongs here.
 
 Main-thread execution alone is insufficient: WPF Dispatcher callbacks and continuations after `await` do not establish Revit API context. Modeless requests use `ExternalEvent`; raising it is a dispatch request, not immediate execution. API reads are not safe in `Task.Run`, actors, timers or `Parallel.ForEach`. Do not keep a transaction or group open across `await` or callbacks.
 
@@ -32,9 +32,9 @@ Read [packages and testing](references/ecosystem.md) before adding a wrapper, AP
 
 ## Required output when implementing
 
-- Target record, thin host adapter and pure business-logic tests.
+- Target record, thin host adapter and executed pure tests covering calculation boundaries and identity preservation.
 - For writes/deferred work: stale-input, transaction/undo and cancellation policies.
 - For performance claims: measurements on representative models.
-- Per target, report compilation, tests, host loading, UI execution and deployment separately as **passed, failed or unverified**. Deployment succeeds only after every required copy succeeds.
+- Build every requested target; fix errors and rerun affected checks. Report compilation, tests, host/UI execution and deployment separately as **passed, failed or unverified**. Deployment succeeds only after every required copy succeeds.
 
 Use the exact release SDK/reference for member availability and The Building Coder for experience and rationale. Historical samples and dated source links require rechecking before claiming support for later releases.
