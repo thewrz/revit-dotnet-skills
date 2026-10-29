@@ -19,13 +19,15 @@
 
 Files: `skills/revit-development/SKILL.md`, its `references/versions.md` and `references/ecosystem.md`, and descriptions in `skills/project-structure/SKILL.md` and `skills/csharp-coding-standards/SKILL.md`.
 
-- [ ] Preserve old package and start isolated baseline.
-- [ ] Replace wording using the approved six changes; keep the entry point approximately its current length.
-- [ ] Run manifest validators, existing six tests, index generation and diff checks; commit locally.
+- [x] Preserve old package and start isolated baseline.
+- [x] Replace wording using the approved six changes; keep the entry point approximately its current length.
+- [x] Run manifest validators, existing six tests, index generation and diff checks; commit locally.
 
 ## Task 2: Same-prompt comparison
 
-- [ ] Finish old run, then launch new revision with identical prompt/model/effort/isolation.
-- [ ] Inspect skill reads, generated scope, pure business-logic boundary, target contract, transactions, packaging and verification honesty.
-- [ ] Compile/test generated artifacts where feasible, including sequential targets if claimed.
-- [ ] Save raw outputs, sanitized tool evidence and a comparison report. Report regressions as well as improvements.
+- [x] Finish old run, then launch new revision with identical prompt/model/effort/isolation.
+- [x] Inspect skill reads, generated scope, pure business-logic boundary, target contract, transactions, packaging and verification honesty.
+- [x] Compile/test generated artifacts where feasible, including sequential targets if claimed.
+- [x] Save raw outputs, sanitized tool evidence and a comparison report. Report regressions as well as improvements.
+
+Outcome: routing improved (both C# and project-structure read); both generated projects compile with reference warnings, while the revised output omits the old output's update-level runtime boundary. Same prompt SHA-256: `69930f6b0d60fd303e4a704b9d55daf88a80cd8da80a3e10ce2bc892206c43e6`. Tested skill commit: `08a2034`. Full evidence is in `/home/adam/github/revit-dotnet-skills-reviews/2026-10-28-luna-comparison/COMPARISON.md`. No generated source was corrected for scoring.
