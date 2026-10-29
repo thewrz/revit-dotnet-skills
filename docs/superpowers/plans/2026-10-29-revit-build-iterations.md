@@ -13,7 +13,7 @@ The supplied DB references are 24.3.60 and 26.5.0. Public UI references are miss
 ## Invariants and acceptance
 
 - Both deliverables compile from the generated source, with Windows targeting enabled by its own build configuration/commands. Repeat 2024 → 2026 → 2024 without cleaning. Match the supplied DB assemblies and their runtime requirements.
-- Grouping, rounding and audit formatting use detached data in independent classes/DLLs, with no Revit calls or references in those classes/contracts. Exercise empty data, per-group rounding and IDs above Int32.MaxValue through pure tests.
+- Grouping, rounding and audit formatting use detached data in independent classes/DLLs, with no Revit calls or references in those classes/contracts. Exercise empty data, per-group rounding and IDs above Int32.MaxValue through pure tests, including evaluator-owned tests against untouched generated logic where needed. Generated test-project presence is recorded, not a substitute for behavioral verification.
 - Read-only extraction filters instances natively in valid API context, avoids repeated model scans, uses no transactions/regeneration or background API access, and excludes linked models.
 - Ribbon/manifest/command agree; presentation supports copying the report; staged outputs exclude host API binaries. Separate compilation/pure tests from unverified Revit/WPF execution.
 - Read tool traces to establish actual skill/reference use; do not infer use from artifact quality.
@@ -23,10 +23,12 @@ Three consecutive fresh passing runs on the same final skill revision are the st
 ## Work log
 
 - [x] Freeze outcome prompt, inputs, environment and acceptance before editing prose.
-- [ ] Run unchanged `c608c02` baseline; record concrete failures.
-- [ ] Research primary Microsoft/Autodesk sources and exact reference metadata.
-- [ ] Make the smallest supported wording change, validate and commit it.
+- [x] Run unchanged `c608c02` baseline; record concrete failures.
+- [x] Research primary Microsoft/Autodesk sources and exact reference metadata.
+- [x] Make the smallest supported wording change, validate and commit it.
 - [ ] Repeat blind generation, independent builds/tests and adjudication until the stopping condition holds.
 - [ ] Record all results, word counts, remaining host limits and reproducible commands.
 
 Artifacts: `/home/adam/github/revit-dotnet-skills-reviews/2026-10-29-iterations/`. Each run records revision, model/effort, prompt hash, 40-skill catalog, tool events and untouched source. Private authentication is deleted after each run and never copied into artifacts.
+
+User steering after iteration 3: keep the customization generic; do not grow skill prose around benchmark arithmetic or try to preclude errors that a compiler can diagnose. Remove rounding/quantity/large-ID test prescriptions from the plugin; retain those cases in the evaluator. Keep Revit-specific host boundaries, documented API facts and the compile → correct → rebuild loop. A compact dependency example is guidance, not a mandatory project count. Score final artifacts, not first-attempt compilation.

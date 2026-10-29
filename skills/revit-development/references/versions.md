@@ -16,7 +16,7 @@ For older years, retrieve that year's SDK requirements; do not extrapolate `net4
 
 ## Build contract
 
-- Distinguish SDK/compiler, language, TFM, API and host versions. Inspect assembly identity and framework references without loading Revit's native dependencies; a folder named `2026` cannot distinguish .NET 8 from 10. Check DB/UI assemblies individually and disclose mixed builds. A newer compiler does not add BCL APIs to `net48`.
+- Distinguish SDK/compiler, language, TFM, API and host versions. Check reference identities and dependencies; disclose mixed builds. A newer compiler does not add BCL APIs to `net48`.
 - On Linux/macOS, set [`EnableWindowsTargeting=true`](https://learn.microsoft.com/en-us/dotnet/core/tools/sdk-errors/netsdk1100) for Windows/WPF builds; restore matching Windows Desktop and .NET Framework reference assemblies. This enables compilation, not Revit/WPF execution. Keep portable tests runnable on the available runtime.
 - Separate year-specific adapters or explicit `RevitYear` + runtime configurations are valid. Use unique intermediate/output paths per combination; TFMs alone cannot distinguish same-runtime years. When customizing paths, exclude every target's generated files from source discovery, including WPF temporary projects ([MSBuild exclusions](https://learn.microsoft.com/en-us/dotnet/core/project-sdk/msbuild-props#defaultitemexcludes)). Verify target A → B → A in one checkout without cleaning.
 - Pin API references to the actual minimum supported release/update. Use conditional package references or per-adapter project references; inspect restored assets. Build against the minimum API surface, then test later supported updates.
@@ -27,7 +27,7 @@ For older years, retrieve that year's SDK requirements; do not extrapolate `net4
 
 | API seam | Guidance |
 |---|---|
-| Element IDs | 2024 introduces 64-bit `ElementId.Value`; `IntegerValue` can throw for large IDs and is removed in [2026](https://help.autodesk.com/cloudhelp/2026/ENU/Revit-API-MainReference/files/html/44f3f7b1-3229-3404-93c9-dc5e70337dd6.htm). Use `Value`/`long` throughout 2024+ adapters, DTOs and serialization; test above Int32.MaxValue. Built-in category/parameter enums also widened. |
+| Element IDs | 2024 introduces 64-bit `ElementId.Value`; `IntegerValue` can throw for large IDs and is removed in [2026](https://help.autodesk.com/cloudhelp/2026/ENU/Revit-API-MainReference/files/html/44f3f7b1-3229-3404-93c9-dc5e70337dd6.htm). Use `Value`/`long` throughout 2024+ adapters, DTOs and serialization. Built-in category/parameter enums also widened. |
 | Units/specs, 2021 onward | Migrate legacy `DisplayUnitType`/`UnitType` overloads to the release's `ForgeTypeId`, `UnitTypeId`, `SpecTypeId` and `UnitUtils` APIs. Do not confuse spec IDs with unit IDs or parameter IDs. |
 | Parameters | Resolve by built-in identifier or shared-parameter GUID where available, rather than localized display name. Check storage type, read-only status and unit semantics before setting. |
 | 2025 removals | [FamilyManager.AddParameter/ReplaceParameter overloads taking BuiltInParameterGroup were removed](https://blog.autodesk.io/whats-new-in-the-revit-2025-api/); use the release's ForgeTypeId overloads. |

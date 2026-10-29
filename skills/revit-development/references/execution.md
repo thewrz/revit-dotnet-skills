@@ -16,7 +16,7 @@ Recommended assembly responsibilities:
 | Revit adapter per API target | Model → snapshots; validated changes → model | Matching Revit API, Domain |
 | UI/orchestration | User intent, progress, cancellation, results | Domain contracts and dispatch abstraction |
 
-DTOs alone do not establish this boundary: commands/windows delegate grouping, rounding and report formatting to the portable domain project. Execute its tests without loading Revit/WPF, covering empty inputs, quantity boundaries and large identities. Prefer integer/decimal arithmetic for exact quantity rules; binary floating-point followed by ceiling can overcount at integral boundaries.
+Test business behavior through detached inputs and outputs without loading Revit/WPF. Command handlers and windows coordinate this work; the independent domain owns its rules.
 
 An interface hiding a `Document` behind a method called by background business logic is still an API call. Snapshot the needed data first. Convert `XYZ`, transforms, geometry and units to domain-owned values where needed; never enumerate a collector/lazy projection after leaving API context. Preserve `long` IDs with document identity; IDs alone are not globally unique, and saved/cross-session workflows need an appropriate persistent identity such as `UniqueId` resolved inside the adapter.
 
