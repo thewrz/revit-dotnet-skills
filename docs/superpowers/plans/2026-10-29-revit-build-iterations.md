@@ -13,7 +13,7 @@ The supplied DB references are 24.3.60 and 26.5.0. Public UI references are miss
 ## Invariants and acceptance
 
 - Both deliverables compile from the generated source, with Windows targeting enabled by its own build configuration/commands. Repeat 2024 → 2026 → 2024 without cleaning. Match the supplied DB assemblies and their runtime requirements.
-- Grouping, rounding and audit formatting use detached data in independent classes/DLLs, with no Revit calls or references in those classes/contracts. Exercise empty data, per-group rounding and IDs above Int32.MaxValue through pure tests, including evaluator-owned tests against untouched generated logic where needed. Generated test-project presence is recorded, not a substitute for behavioral verification.
+- Grouping and quantity rules use detached data in independent classes/DLLs, with no Revit calls or references in those classes/contracts. Audit output preserves the IDs; presentation-only formatting may live in UI code. Exercise empty data, per-group rounding and IDs above Int32.MaxValue through pure tests, including evaluator-owned tests against untouched generated logic where needed. Generated test-project presence is recorded, not a substitute for behavioral verification.
 - Read-only extraction filters instances natively in valid API context, avoids repeated model scans, uses no transactions/regeneration or background API access, and excludes linked models.
 - Ribbon/manifest/command agree; presentation supports copying the report; staged outputs exclude host API binaries. Separate compilation/pure tests from unverified Revit/WPF execution.
 - Read tool traces to establish actual skill/reference use; do not infer use from artifact quality.

@@ -9,14 +9,14 @@ Revit owns the runtime, API context and model. Preserve upstream practices withi
 
 For project/build changes, load [project-structure](../project-structure/SKILL.md); for C#, load [csharp-coding-standards](../csharp-coding-standards/SKILL.md). Apply Revit host constraints.
 
-Keep business logic independent of the host. A typical dependency structure is:
+Keep business logic in an independently buildable core:
 
 ```text
 Core           plain .NET types and logic; no Autodesk/WPF references
 RevitAdapter   → Core; API access, commands and presentation
 ```
 
-Commands and UI delegate business decisions to Core, which can be tested without Revit. Scale the structure to the requested feature.
+Commands and UI delegate business decisions to Core. Build and test Core without Revit before integrating the adapter.
 
 ## Establish the target before coding
 
