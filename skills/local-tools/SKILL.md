@@ -395,15 +395,16 @@ updates:
 
 ### Tool Not Found After Restore
 
-Ensure you're running from the repository root:
+Confirm the working directory is inside the repository and restore its tool manifest. Commands that accept file paths still resolve those paths relative to the working directory:
 
 ```bash
 # A repo-root manifest with isRoot:true is still discovered from this subdirectory.
 cd src/MyApp
 dotnet docfx
 
-# Correct - run from solution root
+# From the solution root, restore tools and resolve this project-relative config path.
 cd ../..
+dotnet tool restore
 dotnet docfx docs/docfx.json
 ```
 

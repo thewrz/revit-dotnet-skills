@@ -108,7 +108,7 @@ See `skills/marketplace-publishing/SKILL.md` for detailed workflow.
 
 ## Content Guidelines
 
-- Skills should be concise entry points with focused supporting references; avoid generic repetition
+- Inherited skills should remain comprehensive reference documents (10-40KB). The new revit-development entry point uses focused supporting references
 - Include concrete code examples with modern C# patterns
 - Reference authoritative sources rather than duplicating content
 - Agents define personas with expertise areas and diagnostic approaches

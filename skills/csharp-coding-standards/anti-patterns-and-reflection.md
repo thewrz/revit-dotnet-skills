@@ -117,7 +117,7 @@ When you genuinely need to access private or internal members (serializers, test
 var field = typeof(Order).GetField("_status", BindingFlags.NonPublic | BindingFlags.Instance);
 var status = (OrderStatus)field!.GetValue(order)!;
 
-// PREFER: UnsafeAccessor - zero overhead, AOT-compatible
+// PREFER: UnsafeAccessor - avoids reflection APIs; verify matching signatures and runtime support
 [UnsafeAccessor(UnsafeAccessorKind.Field, Name = "_status")]
 static extern ref OrderStatus GetStatusField(Order order);
 
@@ -151,7 +151,7 @@ static extern Order CreateOrder(OrderId id, CustomerId customerId);
 | Performance | Runtime-dependent | Avoids reflection lookup/invocation; measure the accessor path |
 | AOT compatible | Depends on preserved metadata and operation; dynamic code generation is restricted | Supported with matching target signatures |
 | Allocations | Yes (boxing, arrays) | None |
-| Compile-time checked | No | Partially (signature) |
+| Target-member checked at compile time | No | No; target matching happens at runtime |
 
 **Use cases:**
 - Serializers accessing private backing fields

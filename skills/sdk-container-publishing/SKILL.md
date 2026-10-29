@@ -23,7 +23,7 @@ Do not use it when:
 
 ## What This Is
 
-Container publishing was introduced for .NET 7. Before .NET SDK 8.0.200, projects needed the `Microsoft.NET.Build.Containers` package; SDK 8.0.200 and later include the tooling by default. No Dockerfile or Docker installation is required to produce an image; Docker or Podman is only required to run it locally. See the [container publishing overview](https://learn.microsoft.com/en-us/dotnet/core/containers/overview).
+Container publishing was introduced for .NET 7. Before .NET SDK 8.0.200, projects needed the `Microsoft.NET.Build.Containers` package; SDK 8.0.200 and later include the tooling by default. No Dockerfile is required. Publishing directly to a registry or tarball needs no local daemon; the default local-daemon output requires Docker or Podman. See the [container publishing overview](https://learn.microsoft.com/en-us/dotnet/core/containers/overview).
 
 The quickest path is one command:
 
@@ -47,7 +47,7 @@ See the [containerize a .NET app reference](https://learn.microsoft.com/en-us/do
 
 ## Key Facts
 
-- **No Docker required to build.** The SDK creates the image itself; a runtime is only needed to run it. See the [SDK publish tutorial](https://learn.microsoft.com/en-us/dotnet/core/containers/sdk-publish).
+- **Daemon-free registry/archive output.** The SDK creates the image itself, but the default local output still requires a Docker/Podman daemon. See the [SDK publish tutorial](https://learn.microsoft.com/en-us/dotnet/core/containers/sdk-publish).
 - **Image name defaults to `AssemblyName`.** Set `ContainerRepository` to override.
 - **Base image is inferred.** Self-contained projects get `mcr.microsoft.com/dotnet/runtime-deps`, ASP.NET Core gets `dotnet/aspnet`, other apps get `dotnet/runtime`, tagged for the TFM. Since SDK 8.0.200 the inference is size and security aware: musl RIDs pick Alpine variants, `PublishAot=true` picks the chiseled AOT runtime-deps variant. See the [base image inference notes](https://learn.microsoft.com/en-us/dotnet/core/containers/publish-configuration).
 - **Since .NET 8, the SDK tags images `latest` when you do not set a tag.** If your publish relies on the version tag you must set `ContainerImageTag` (single tag) or `ContainerImageTags` (list) explicitly. This is a real footgun in CI - see the [tag drift entry in references/troubleshooting.md](references/troubleshooting.md).

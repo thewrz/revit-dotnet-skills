@@ -364,7 +364,7 @@ public IReadOnlyList<OrderItem> BuildOrderItems(Cart cart)
 | Static pure functions | No vtable, testable, thread-safe |
 | Defer `.ToList()` | Single materialization |
 | `ValueTask` for hot paths | Avoid Task allocation |
-| `Span<T>` for bytes | Stack allocation, no copying |
+| `Span<T>` for bytes | View over stack, heap or unmanaged memory without copying the underlying buffer |
 | `IReadOnlyList<T>` return | Read-only interface contract |
 | `FrozenDictionary` | Fastest lookup for static data |
 

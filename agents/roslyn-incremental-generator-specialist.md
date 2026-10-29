@@ -173,7 +173,7 @@ return new FooSpec(
     ImmutableEquatableArray.Create(messageTypes));
 ```
 
-**Why this matters**: immutable collections and their builders generally carry overhead during construction compared to their mutable counterparts. For example, `ImmutableHashSet.Builder.Add` is roughly 1.4–3× slower than `HashSet.Add`, and `ImmutableArray.Create` from a mutable `List<T>` involves an extra copy step. When parser work runs, internal construction may use a mutable container before freezing the result; immutability and value equality are only required where the incremental engine caches and compares model snapshots. The benchmark above illustrates the pattern with `HashSet<T>` vs `ImmutableHashSet<T>`, but the same principle applies across other collection types.
+**Why this matters**: immutable collections and their builders generally carry overhead during construction compared to their mutable counterparts. For example, `ImmutableHashSet.Builder.Add` is roughly 1.4–3× slower than `HashSet.Add`, and `ImmutableArray.Create` from a mutable `List<T>` involves an extra copy step. When parser work runs, internal construction should use the cheapest mutable container available before freezing the result; immutability and value equality are only required where the incremental engine caches and compares model snapshots. The benchmark above illustrates the pattern with `HashSet<T>` vs `ImmutableHashSet<T>`, but the same principle applies across other collection types.
 
 | Concern | Internal parser/utility code | Pipeline-facing spec |
 |--------|------------------------------|----------------------|
@@ -495,7 +495,7 @@ Verify output stability separately from cache reuse. Identical output alone does
 
 ```csharp
 [Fact]
-public void Generator_ProducesCachedOutput_OnSecondRun()
+public void Generator_ProducesStableOutput_OnSecondRun()
 {
     var source = @"[GenerateCode] public partial class MyTarget { }";
     var compilation = CreateCompilation(source);
