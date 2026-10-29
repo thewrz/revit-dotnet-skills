@@ -214,10 +214,9 @@ var order = MessagePackSerializer.Deserialize<Order>(bytes);
 [MessagePackObject]
 public partial class Order { }  // Illustrative contract; verify generator requirements for the pinned package
 
-// The current MessagePack-CSharp source generator emits this resolver.
-// StandardResolver also discovers generated formatters in the usual setup.
-var options = MessagePackSerializerOptions.Standard
-    .WithResolver(MessagePack.GeneratedMessagePackResolver.Instance);
+// Current StandardResolver discovers generated formatters and retains built-in/collection support.
+// Verify source generation and AOT support for every contract in the pinned package.
+var options = MessagePackSerializerOptions.Standard;
 ```
 
 ---
@@ -399,8 +398,8 @@ var formatter = new BinaryFormatter();  // Security risk!
 // Avoid CLR type-name metadata in wire contracts unless explicitly required
 settings.TypeNameHandling = TypeNameHandling.All;  // Couples payloads to CLR type identities
 
-// Benchmark serializer/options for hot paths; Newtonsoft.Json's reflection-based defaults
-// are not a Native AOT guarantee. Select and verify the serializer for the deployment target.
+// Don't use reflection serialization for hot paths (institutional preference).
+// Newtonsoft.Json's reflection-based defaults are not trim/Native-AOT safe; benchmark hot paths.
 JsonConvert.SerializeObject(order);
 ```
 

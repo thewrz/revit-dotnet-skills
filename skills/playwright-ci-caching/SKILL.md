@@ -63,15 +63,15 @@ Playwright browsers (~400MB) must be downloaded on every CI run by default. This
 - name: Install Playwright Linux Dependencies
   if: runner.os == 'Linux'
   shell: pwsh
-  run: pwsh bin/Release/netX/playwright.ps1 install-deps
+  run: pwsh tests/YourApp.UITests/bin/Release/netX/playwright.ps1 install-deps
 
 - name: Install Playwright Browsers
   if: steps.playwright-cache.outputs.cache-hit != 'true'
   shell: pwsh
-  run: pwsh bin/Release/netX/playwright.ps1 install
+  run: pwsh tests/YourApp.UITests/bin/Release/netX/playwright.ps1 install
 ```
 
-Build the test project before these steps so the generated `playwright.ps1` exists. Replace `netX` with its target framework. The cache stores browser binaries; a fresh Linux runner still needs system dependencies installed even when the browser cache hits.
+Build the test project before these steps so the generated `playwright.ps1` exists. Replace `tests/YourApp.UITests` with the actual test project directory and `netX` with its target framework. The cache stores browser binaries; a fresh Linux runner still needs system dependencies installed even when the browser cache hits.
 
 ### Multi-OS GitHub Actions
 
@@ -115,17 +115,17 @@ For workflows that run on multiple operating systems:
   condition: eq(variables['Agent.OS'], 'Linux')
   inputs:
     targetType: 'inline'
-    script: 'pwsh bin/Release/netX/playwright.ps1 install-deps'
+    script: 'pwsh tests/YourApp.UITests/bin/Release/netX/playwright.ps1 install-deps'
 
 - task: PowerShell@2
   displayName: 'Install Playwright Browsers'
   condition: ne(variables['PlaywrightCacheHit'], 'true')
   inputs:
     targetType: 'inline'
-    script: 'pwsh bin/Release/netX/playwright.ps1 install'
+    script: 'pwsh tests/YourApp.UITests/bin/Release/netX/playwright.ps1 install'
 ```
 
-Build the test project before these steps. Replace `netX` with its target framework. Linux system dependencies are installed on each fresh job; only browser downloads are skipped on a cache hit.
+Build the test project before these steps. Replace `tests/YourApp.UITests` with the actual test project directory and `netX` with its target framework. Linux system dependencies are installed on each fresh job; only browser downloads are skipped on a cache hit.
 
 ## Use the Generated Playwright Script
 
@@ -134,16 +134,16 @@ The .NET package generates `playwright.ps1` in the test project's output directo
 Usage:
 ```bash
 # Install browsers
-pwsh bin/Release/netX/playwright.ps1 install
+pwsh tests/YourApp.UITests/bin/Release/netX/playwright.ps1 install
 
 # Install Linux system dependencies (run on each fresh Linux runner)
-pwsh bin/Release/netX/playwright.ps1 install-deps
+pwsh tests/YourApp.UITests/bin/Release/netX/playwright.ps1 install-deps
 
 # Install specific browser
-pwsh bin/Release/netX/playwright.ps1 install chromium
+pwsh tests/YourApp.UITests/bin/Release/netX/playwright.ps1 install chromium
 
 # Show installed browsers
-pwsh bin/Release/netX/playwright.ps1 install --list
+pwsh tests/YourApp.UITests/bin/Release/netX/playwright.ps1 install --list
 ```
 
 ## Prerequisites

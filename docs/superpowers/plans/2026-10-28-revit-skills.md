@@ -18,10 +18,10 @@ Spec: user's 2026-10-28 request; no further questions. Research precedes edits; 
 
 - [x] Clone upstream; fork to thewrz; preserve upstream SHA 5ca5db8cf25566f19d2a5dc53204d4af22b23a0d; issue #1.
 - [x] Research Microsoft/Autodesk/TBC/package sources and run no-Revit-skill baseline.
-- [ ] Add failing packaging regression checks, brand fork and register Revit guidance; validate.
-- [ ] Write release-aware Revit skill/references; run fresh behavioral scenarios against baseline gaps.
-- [ ] Correct substantiated inherited errors, preserve opinions, publish complete skill inventory with source/verification limits.
-- [ ] Run validators, shell lint, regression checks, index drift check and final review; publish draft PRs.
+- [x] Add failing packaging regression checks, brand fork and register Revit guidance; validate.
+- [x] Write release-aware Revit skill/references; run fresh behavioral scenarios against baseline gaps.
+- [x] Correct substantiated inherited errors, preserve opinions, publish complete skill inventory with source/verification limits.
+- [x] Run validators, shell lint, regression checks, index drift check and final review; publish draft PRs.
 
 ## Review focus
 

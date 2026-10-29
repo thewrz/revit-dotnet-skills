@@ -235,7 +235,7 @@ public static class OrderAccessors
 - The member name is a compile-time constant in the accessor declaration, but the runtime resolves the target member from the attribute and signature. This avoids reflection APIs; a mismatched target can still fail at runtime.
 - Instance members take the target as the first parameter. `StaticMethod`/`StaticField` take a dummy first parameter whose type identifies the owning type (its value is ignored).
 - `Field`/`StaticField` accessors return by `ref` (`ref readonly` for read-only fields). `Constructor` returns the constructed type. Properties are accessed through their `get_*`/`set_*` methods via `UnsafeAccessorKind.Method`; a setter takes the value as the last parameter and returns `void`.
-- Works with generics: close the accessor over the generic type parameter and the runtime instantiates it per type argument.
+- Generic parameters require .NET 9 or later and must match the target's parameter kind, index and constraints. Do not apply the generic accessor example to a .NET 8 host; see [UnsafeAccessor runtime requirements](https://learn.microsoft.com/en-us/dotnet/api/system.runtime.compilerservices.unsafeaccessorattribute).
 - The signature is only lightly validated — a wrong name or shape fails at runtime, not compile time. Add tests that exercise every accessor.
 - The name must be a constant; if it comes from user input at runtime you still need reflection and its annotations.
 
