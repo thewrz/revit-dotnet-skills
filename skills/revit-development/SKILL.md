@@ -9,7 +9,7 @@ Revit owns the runtime, API context and model. Preserve upstream practices withi
 
 For project/build changes, load [project-structure](../project-structure/SKILL.md); for C#, load [csharp-coding-standards](../csharp-coding-standards/SKILL.md). Apply Revit host constraints.
 
-Keep the requested scope; preserve calculation and verification boundaries even for small tools.
+For features with calculations, first build a portable domain project and runnable tests; then add the Revit/UI adapter. Keep the requested scope.
 
 ## Establish the target before coding
 
@@ -22,7 +22,7 @@ Read [execution and performance](references/execution.md) for any model access, 
 - **Read-only:** query → detached snapshot → pure calculation → presentation. Filter in valid API context; extract only needed values.
 - **Modification:** snapshot → pure computation → revalidate → apply. Include document/element identity and original values for later resolution or modification. Re-enter valid API context, verify current state, then apply changed values in bounded transactions.
 
-Calculations and report formatting belong in plain .NET classes/DLLs, testable without Revit or WPF; UI renders their results. Contracts contain detached values, never `Document`, `Element`, `Parameter`, `XYZ` or lazy API projections. Bounded CPU parallelism belongs here.
+The domain owns calculations and report formatting; commands/windows delegate to it. Contracts contain detached values, never `Document`, `Element`, `Parameter`, `XYZ` or lazy API projections. Bounded CPU parallelism belongs here.
 
 Main-thread execution alone is insufficient: WPF Dispatcher callbacks and continuations after `await` do not establish Revit API context. Modeless requests use `ExternalEvent`; raising it is a dispatch request, not immediate execution. API reads are not safe in `Task.Run`, actors, timers or `Parallel.ForEach`. Do not keep a transaction or group open across `await` or callbacks.
 
