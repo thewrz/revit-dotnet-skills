@@ -19,9 +19,9 @@ Stage only `.claude-plugin/plugin.json`, `skills/`, `agents/`, `LICENSE`, and `e
 Run from the staged plugin:
 
 ```sh
-CLAUDE_CODE_EFFORT_LEVEL=high claude plugin eval . \
+CLAUDE_CODE_DISABLE_BUNDLED_SKILLS=1 CLAUDE_CODE_EFFORT_LEVEL=high claude plugin eval . \
   --model claude-fable-5-1 --runs 1 --ablation with-without --concurrency 2 \
-  --allow-tools Bash Write Edit WebFetch --disallow-tools Agent TaskStop \
+  --allow-tools Bash Write Edit WebFetch WebSearch --disallow-tools Agent TaskStop \
   --no-scaffold --no-publish --trust-plugin --keep-temp \
   --output-dir /path/to/results --report /path/to/results/report.html
 ```
