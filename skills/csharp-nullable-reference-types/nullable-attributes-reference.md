@@ -194,10 +194,11 @@ public bool TryGetValue(
 
 ### `[NotNullIfNotNull(string)]`
 
-**Intent:** Indicate that the return value is non-null if and only if a specified parameter is non-null. Useful for wrappers and conversion helpers. Prefer `nameof(param)` over a string literal for refactor safety.
+**Intent:** Indicate that the return value is non-null when a specified parameter is non-null. The attribute does not require the return to be null when that parameter is null. Useful for wrappers and conversion helpers. Prefer `nameof(param)` over a string literal for refactor safety.
 
 ```csharp
-public static string? NormalizeUrl([NotNullIfNotNull(nameof(url))] string? url)
+[return: NotNullIfNotNull(nameof(url))]
+public static string? NormalizeUrl(string? url)
 {
     if (url is null)
     {

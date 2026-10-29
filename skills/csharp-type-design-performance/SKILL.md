@@ -303,13 +303,13 @@ finally
 
 ## Collection Return Types
 
-### Return Immutable Collections from APIs
+### Return Read-Only Views or Immutable Collections from APIs
 
 ```csharp
-// DO: Return immutable collection
+// DO: Return a read-only interface over a defensive copy
 public IReadOnlyList<Order> GetOrders()
 {
-    return _orders.ToList();  // Caller can't modify internal state
+    return _orders.ToList();  // Mutating the returned list does not change internal state
 }
 
 // DO: Use frozen collections for static data (.NET 8+)
@@ -365,7 +365,7 @@ public IReadOnlyList<OrderItem> BuildOrderItems(Cart cart)
 | Defer `.ToList()` | Single materialization |
 | `ValueTask` for hot paths | Avoid Task allocation |
 | `Span<T>` for bytes | Stack allocation, no copying |
-| `IReadOnlyList<T>` return | Immutable API contract |
+| `IReadOnlyList<T>` return | Read-only interface contract |
 | `FrozenDictionary` | Fastest lookup for static data |
 
 ---

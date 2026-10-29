@@ -32,7 +32,7 @@ tags:
 **CRITICAL**: The .NET OpenTelemetry implementation is fundamentally different from other platforms. .NET provides tracing, metrics, and logging APIs **in the framework itself**.
 That means **OTel does not provide a separate instrumentation API** — it uses the built-in .NET APIs and acts as the collection/export layer.
 
-### The Three Built-in .NET APIs (Primary — Zero Dependencies)
+### The .NET Instrumentation APIs (Primary)
 
 | Signal | .NET Framework API | Namespace |
 |--------|-------------------|-----------|
@@ -40,8 +40,12 @@ That means **OTel does not provide a separate instrumentation API** — it uses 
 | **Metrics** | `Meter` / `Counter<T>` / `Histogram<T>` / etc. | `System.Diagnostics.Metrics` |
 | **Logging** | `ILogger<T>` | `Microsoft.Extensions.Logging` |
 
-These are **the primary and only APIs** library authors should use for instrumentation.
-They ship with the .NET runtime — **no NuGet packages required**.
+These are the primary APIs library authors should use for instrumentation. Availability
+without additional packages depends on the target framework. For example, `System.Diagnostics.Metrics`
+is built into .NET 6+, while older .NET Core and .NET Framework targets may need the
+[`System.Diagnostics.DiagnosticSource` package](https://learn.microsoft.com/en-us/dotnet/core/diagnostics/compare-metric-apis);
+`ILogger<T>` may require a `Microsoft.Extensions.Logging.Abstractions` reference. Check target-framework compatibility
+before claiming zero dependencies, especially for .NET Framework/Revit hosts.
 
 ### The OTel Collection/Export Layer (Secondary — Application Root Only)
 
@@ -68,12 +72,15 @@ composition root (not in libraries):
 > `System.Diagnostics.ActivitySource` / `System.Diagnostics.Metrics.Meter` and let the
 > consuming application configure the export pipeline. Do you want to proceed?"
 
-**Library authors**: Add **nothing**. Use only `System.Diagnostics.*` and `ILogger`.
-The consuming application wires up the SDK and exporters.
+**Library authors**: Avoid OTel SDK/exporter dependencies in reusable libraries. Use
+standard .NET instrumentation APIs where available and add only the compatibility
+package references required by the library's target frameworks. The consuming
+application wires up the SDK and exporters.
 
 **Application authors**: Add `OpenTelemetry.Extensions.Hosting` + the exporters and instrumentation libraries you need. See [sdk-resources-and-logs-reference.md](sdk-resources-and-logs-reference.md) for full setup patterns.
 
-**Never add** `OpenTelemetry.Api` to a library — `System.Diagnostics.*` IS the API.
+**Prefer not to add** `OpenTelemetry.Api` to a library when the standard .NET APIs
+meet the need; some target frameworks may require compatibility packages.
 
 For SDK setup, resource configuration, exporters, sampling, and logs integration, see [sdk-resources-and-logs-reference.md](sdk-resources-and-logs-reference.md).
 
@@ -145,7 +152,7 @@ async Task HelperAsync()
 **Rules**:
 - Check `ActivitySource.HasListeners()` before creating (zero-allocation fast path)
 - Always null-check Activity after creation (listener may filter or sample it out)
-- Never start activities in async helper methods (`Activity.Current` uses `AsyncLocal`)
+- Activities can span awaited async helper work because `Activity.Current` flows through async execution context. Keep the activity scope alive until that work completes; detached or fire-and-forget tasks need an explicitly managed lifetime/context.
 - Guard expensive tag computation behind `activity.IsAllDataRequested`
 - Use W3C TraceContext. .NET Core 3.0+ / .NET 5+ uses it by default; older TFMs or .NET Framework apps may set `Activity.DefaultIdFormat = ActivityIdFormat.W3C` at startup and use `Activity.ForceDefaultIdFormat = true` to override hierarchical parents.
 

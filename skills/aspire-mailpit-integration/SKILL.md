@@ -52,7 +52,8 @@ var mailpit = builder.AddContainer("mailpit", "axllent/mailpit")
 // Reference in your API project
 var api = builder.AddProject<Projects.MyApp_Api>("api")
     .WithReference(mailpit.GetEndpoint("smtp"))
-    .WithEnvironment("Smtp__Host", mailpit.GetEndpoint("smtp"));
+    .WithEnvironment("Smtp__Host", mailpit.GetEndpoint("smtp").Property(EndpointProperty.Host))
+    .WithEnvironment("Smtp__Port", mailpit.GetEndpoint("smtp").Property(EndpointProperty.Port));
 
 builder.Build().Run();
 ```
@@ -361,9 +362,16 @@ public async Task BulkOperation_SendsMultipleEmails()
         Emails = new[] { "a@test.com", "b@test.com", "c@test.com" }
     });
 
-    var messages = await _mailpit.WaitForMessagesAsync(
-        expectedCount: 3,
-        timeout: TimeSpan.FromSeconds(10));
+    var recipients = new[] { "a@test.com", "b@test.com", "c@test.com" };
+    var messages = new List<MailpitMessage>();
+    foreach (var recipient in recipients)
+    {
+        var message = await _mailpit.WaitForMessageAsync(
+            m => m.To.Contains(recipient),
+            timeout: TimeSpan.FromSeconds(10));
+        message.Should().NotBeNull();
+        messages.Add(message!);
+    }
 
     messages.Should().HaveCount(3);
     messages.Select(m => m.To.First())

@@ -57,10 +57,10 @@ The foundation of stable APIs: **never remove or modify, only extend**.
 
 ## API Change Guidelines
 
-### Safe Changes (Any Release)
+### Usually binary-compatible changes (check source compatibility)
 
 ```csharp
-// SAFE: Add NEW overload methods that delegate to existing methods
+// Usually binary-compatible: add overloads, then check source overload resolution for ambiguity
 // Existing method - do not modify its signature
 public void Process(Order order) { ... }
 // New overload - safe to add
@@ -188,7 +188,7 @@ For distributed systems, serialized data must be readable across versions.
 | **Backward** | Old writers → New readers (current version reads old data) |
 | **Forward** | New writers → Old readers (old version reads new data) |
 
-Both are required for zero-downtime rolling upgrades.
+Supporting both directions is a common rolling-upgrade strategy; the required compatibility directions depend on deployment order and which versions coexist.
 
 ### Safely Evolving Wire Formats
 
@@ -229,8 +229,8 @@ Prefer schema-based formats over reflection-based:
 |--------|------|-------------------|
 | **Protocol Buffers** | Schema-based | Excellent - explicit field numbers |
 | **MessagePack** | Schema-based | Good - with contracts |
-| **System.Text.Json** | Schema-based (with source gen) | Good - explicit properties |
-| Newtonsoft.Json | Reflection-based | Poor - type names in payload |
+| **System.Text.Json** | Property contract; source generation supplies compile-time metadata/code | Depends on explicit contract evolution |
+| Newtonsoft.Json | Commonly reflection-based; type metadata is configuration-dependent | Depends on contract and polymorphism settings |
 | BinaryFormatter | Reflection-based | Terrible - never use |
 
 See `dotnet/serialization` skill for details.

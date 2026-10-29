@@ -19,7 +19,11 @@ jobs:
         with:
           persist-credentials: false
 
-      - name: Validate fork packaging
+      - uses: actions/setup-dotnet@67a3573c9a986a3f9c594539f4ab511d57bb3ce9 # v4
+        with:
+          dotnet-version: '8.0.x'
+
+      - name: Validate fork packaging and documentation examples
         run: |
           python -m unittest discover -s tests -v
           bash scripts/generate-skill-index-snippets.sh --update-readme

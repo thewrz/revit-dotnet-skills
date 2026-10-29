@@ -214,7 +214,7 @@ See [ci-and-tooling.md](ci-and-tooling.md) for GitHub Actions setup, custom reso
 
 1. **Run Aspire Dashboard** - When tests fail, check the dashboard at `http://localhost:15888`
 2. **Use Aspire CLI with MCP** - Let AI assistants query real application state
-3. **Enable detailed logging** - Set `ASPIRE_ALLOW_UNSECURED_TRANSPORT=true` for more verbose output
+3. **Enable detailed logging** - Configure logging verbosity or inspect logs in the Aspire dashboard. `ASPIRE_ALLOW_UNSECURED_TRANSPORT=true` permits unsecured transport; it does not increase logging verbosity.
 4. **Check container logs** - Use `docker logs` to inspect container output
 5. **Use breakpoints in fixtures** - Debug fixture initialization to catch startup issues
 6. **Verify resource names** - Ensure resource names match between AppHost and tests

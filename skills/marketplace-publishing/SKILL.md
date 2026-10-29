@@ -1,6 +1,6 @@
 ---
 name: marketplace-publishing
-description: Workflow for publishing skills and agents to the dotnet-skills Claude Code marketplace. Covers adding new content, updating plugin.json, validation, and release tagging.
+description: Workflow for publishing skills and agents to the Revit-focused dotnet-skills fork. Covers adding content, updating manifests, validation, and release tagging.
 ---
 
 > **Revit scope:** For Revit work, first read [revit-development](../revit-development/SKILL.md). Apply this skill only within the selected host/runtime and API-context boundaries; server examples concern companion services. Institutional preferences below remain intentional.
@@ -8,7 +8,7 @@ description: Workflow for publishing skills and agents to the dotnet-skills Clau
 
 # Marketplace Publishing Workflow
 
-This skill documents how to publish skills and agents to the dotnet-skills Claude Code marketplace.
+This skill documents how to add skills and agents to this Revit-focused fork and publish releases.
 
 ## Repository Structure
 
@@ -19,15 +19,12 @@ dotnet-skills/
 │   └── plugin.json           # Plugin metadata + skill/agent registry
 ├── .github/workflows/
 │   └── release.yml           # Release automation
-├── skills/
-│   ├── akka/                 # Akka.NET skills
-│   │   ├── best-practices/SKILL.md
-│   │   ├── testing-patterns/SKILL.md
-│   │   └── ...
-│   ├── aspire/               # .NET Aspire skills
-│   ├── csharp/               # C# language skills
-│   ├── testing/              # Testing framework skills
-│   └── meta/                 # Meta skills
+├── skills/                   # Flat directories; prefixes identify topic
+│   ├── revit-development/SKILL.md
+│   ├── akka-best-practices/SKILL.md
+│   ├── aspire-integration-testing/SKILL.md
+│   ├── csharp-coding-standards/SKILL.md
+│   └── ...
 ├── agents/
 │   └── *.md                  # Agent definitions
 └── scripts/
@@ -36,29 +33,30 @@ dotnet-skills/
 
 ## Adding a New Skill
 
-### Step 1: Choose a Category
+### Step 1: Choose a Flat Skill Name
 
-Skills are organized by domain:
+Skills use flat directories with topic prefixes:
 
 | Category | Purpose |
 |----------|---------|
-| `akka/` | Akka.NET actor patterns, testing, clustering |
-| `aspire/` | .NET Aspire orchestration, testing, configuration |
-| `csharp/` | C# language features, coding standards |
-| `testing/` | Testing frameworks (xUnit, Playwright, Testcontainers) |
-| `meta/` | Meta skills about this marketplace |
+| `revit-*` | Revit API and add-in guidance |
+| `akka-*` | Akka.NET actor patterns, testing, clustering |
+| `aspire-*` | .NET Aspire orchestration, testing, configuration |
+| `csharp-*` | C# language features, coding standards |
+| `playwright-*`, `testcontainers`, `snapshot-testing` | Testing tools and frameworks |
+| `marketplace-*`, `skills-index-*` | Repository maintenance |
 
-Create a new category folder if none fits.
+Use an existing flat naming pattern. If a new prefix is introduced, update `scripts/generate-skill-index-snippets.sh` to classify it.
 
 ### Step 2: Create the Skill Folder
 
-Create a folder with `SKILL.md` inside:
+Create a flat skill folder with `SKILL.md` inside:
 
 ```
-skills/<category>/<skill-name>/SKILL.md
+skills/<skill-name>/SKILL.md
 ```
 
-Example: `skills/akka/cluster-sharding/SKILL.md`
+Example: `skills/akka-cluster-sharding/SKILL.md`
 
 ### Step 3: Write the SKILL.md
 
@@ -95,8 +93,8 @@ Add the skill path to `.claude-plugin/plugin.json` in the `skills` array:
 ```json
 {
   "skills": [
-    "./skills/akka/best-practices",
-    "./skills/akka/cluster-sharding"  // Add new skill here
+    "./skills/akka-best-practices",
+    "./skills/akka-cluster-sharding"
   ]
 }
 ```
@@ -107,12 +105,14 @@ Run the validation script:
 
 ```bash
 ./scripts/validate-marketplace.sh
+./scripts/validate-codex-plugin.sh
+./scripts/generate-skill-index-snippets.sh --update-readme
 ```
 
 ### Step 6: Commit Together
 
 ```bash
-git add skills/akka/cluster-sharding/ .claude-plugin/plugin.json
+git add skills/akka-cluster-sharding/ .claude-plugin/plugin.json README.md
 git commit -m "Add cluster-sharding skill for Akka.NET Cluster Sharding patterns"
 ```
 
@@ -156,8 +156,8 @@ Add to the `agents` array:
 ```json
 {
   "agents": [
-    "./agents/akka-net-specialist",
-    "./agents/my-agent-name"  // Add new agent here
+    "./agents/akka-net-specialist.md",
+    "./agents/my-agent-name.md"
   ]
 }
 ```
@@ -175,12 +175,10 @@ git commit -m "Add my-agent-name agent for [domain] expertise"
 
 ### Versioning
 
-Update the version in `.claude-plugin/plugin.json`:
+Use the repository helper to update both plugin manifests and the Claude marketplace catalog in lockstep:
 
-```json
-{
-  "version": "1.1.0"
-}
+```bash
+./scripts/bump-version.sh 1.9.0
 ```
 
 Use semantic versioning (`MAJOR.MINOR.PATCH`):
@@ -190,24 +188,29 @@ Use semantic versioning (`MAJOR.MINOR.PATCH`):
 
 ### Release Process
 
-1. **Update version in plugin.json**
+1. **Update all version fields in lockstep**
 
-2. **Validate**
+2. **Update `RELEASE_NOTES.md` and validate both marketplace targets**
    ```bash
+   # Edit RELEASE_NOTES.md for this release.
    ./scripts/validate-marketplace.sh
+   ./scripts/validate-codex-plugin.sh
+   ./scripts/generate-skill-index-snippets.sh --update-readme
    ```
 
-3. **Commit version bump**
+3. **Commit release content and version bump**
    ```bash
-   git add .claude-plugin/plugin.json
-   git commit -m "Bump version to 1.1.0"
+   git add .claude-plugin/plugin.json .claude-plugin/marketplace.json .codex-plugin/plugin.json RELEASE_NOTES.md README.md
+   git commit -m "Release 1.9.0"
    ```
 
-4. **Create and push tag**
+4. **Create and push the version tag**
    ```bash
-   git tag v1.1.0
-   git push origin master --tags
+   git tag v1.9.0
+   git push origin v1.9.0
    ```
+
+Do not push a hard-coded branch name as part of this release command. Release from the intended branch using the repository's normal branch workflow, then push the tag.
 
 5. **GitHub Actions will automatically:**
    - Validate the marketplace structure
@@ -221,10 +224,10 @@ Users install the complete plugin (all skills and agents):
 
 ```bash
 # Add the marketplace (one-time)
-/plugin marketplace add Aaronontheweb/dotnet-skills
+/plugin marketplace add thewrz/revit-dotnet-skills
 
 # Install the plugin (gets everything)
-/plugin install dotnet-skills
+/plugin install revit-dotnet-skills
 
 # Update to latest version
 /plugin marketplace update
@@ -237,8 +240,9 @@ Users install the complete plugin (all skills and agents):
 Before committing:
 
 - [ ] SKILL.md has valid YAML frontmatter with `name` and `description`
-- [ ] Skill folder is under appropriate category
+- [ ] Skill folder follows the flat naming convention
 - [ ] Path added to `plugin.json` skills array
+- [ ] Codex validator passes and README index snippets are regenerated
 - [ ] For agents: `model` is specified (haiku/sonnet/opus)
 - [ ] `./scripts/validate-marketplace.sh` passes
 
@@ -250,7 +254,7 @@ Before committing:
 
 - Verify the path in plugin.json matches the folder structure
 - Check that SKILL.md exists in the folder
-- Try reinstalling: `/plugin uninstall dotnet-skills && /plugin install dotnet-skills`
+- Try reinstalling: `/plugin uninstall revit-dotnet-skills && /plugin install revit-dotnet-skills`
 
 ### Validation errors
 

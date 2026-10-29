@@ -334,7 +334,7 @@ dotnet tool uninstall docfx
 
 ### 1. Always Set `isRoot: true`
 
-Prevents MSBuild from searching parent directories for tool manifests:
+Stops the .NET CLI's local-tool manifest search from continuing to parent directories once this manifest is reached:
 
 ```json
 {
@@ -386,7 +386,7 @@ updates:
     directory: "/"
     schedule:
       interval: "weekly"
-    # Includes local tools in .config/dotnet-tools.json
+    # Verify current Dependabot support for local tool manifests before relying on this.
 ```
 
 ---
@@ -398,9 +398,9 @@ updates:
 Ensure you're running from the repository root:
 
 ```bash
-# Wrong - running from subdirectory
+# A repo-root manifest with isRoot:true is still discovered from this subdirectory.
 cd src/MyApp
-dotnet docfx  # Error: tool not found
+dotnet docfx
 
 # Correct - run from solution root
 cd ../..

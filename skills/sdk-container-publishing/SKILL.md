@@ -23,7 +23,7 @@ Do not use it when:
 
 ## What This Is
 
-Since .NET 7, `dotnet publish` builds a container image natively. The `Microsoft.NET.Build.Containers` tooling ships with the SDK, so no Dockerfile is required and no Docker install is needed to produce an image. Docker or Podman is only required to run the image locally. This is documented in the [containerize with dotnet publish tutorial](https://learn.microsoft.com/en-us/dotnet/core/containers/sdk-publish).
+Container publishing was introduced for .NET 7. Before .NET SDK 8.0.200, projects needed the `Microsoft.NET.Build.Containers` package; SDK 8.0.200 and later include the tooling by default. No Dockerfile or Docker installation is required to produce an image; Docker or Podman is only required to run it locally. See the [container publishing overview](https://learn.microsoft.com/en-us/dotnet/core/containers/overview).
 
 The quickest path is one command:
 
