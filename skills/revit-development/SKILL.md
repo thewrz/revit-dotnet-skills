@@ -9,7 +9,15 @@ Revit owns the runtime, API context and model. Preserve upstream practices withi
 
 For project/build changes, load [project-structure](../project-structure/SKILL.md); for C#, load [csharp-coding-standards](../csharp-coding-standards/SKILL.md). Apply Revit host constraints.
 
-For features with calculations, first build a portable domain project and runnable tests; then add the Revit/UI adapter. Keep the requested scope.
+For features with calculations, create this dependency structure before implementing the command:
+
+```text
+Domain          snapshots → calculations/reports; no Autodesk/WPF references
+Domain.Tests    → Domain; runnable without Revit
+RevitAdapter    → Domain; API extraction, commands and presentation
+```
+
+Commands/windows call the domain; they do not calculate results themselves. A DTO-only extraction is incomplete. Keep the requested scope.
 
 ## Establish the target before coding
 
@@ -22,7 +30,7 @@ Read [execution and performance](references/execution.md) for any model access, 
 - **Read-only:** query → detached snapshot → pure calculation → presentation. Filter in valid API context; extract only needed values.
 - **Modification:** snapshot → pure computation → revalidate → apply. Include document/element identity and original values for later resolution or modification. Re-enter valid API context, verify current state, then apply changed values in bounded transactions.
 
-The domain owns calculations and report formatting; commands/windows delegate to it. Contracts contain detached values, never `Document`, `Element`, `Parameter`, `XYZ` or lazy API projections. Bounded CPU parallelism belongs here.
+Domain contracts contain detached values, never `Document`, `Element`, `Parameter`, `XYZ` or lazy API projections. Bounded CPU parallelism belongs in the domain.
 
 Main-thread execution alone is insufficient: WPF Dispatcher callbacks and continuations after `await` do not establish Revit API context. Modeless requests use `ExternalEvent`; raising it is a dispatch request, not immediate execution. API reads are not safe in `Task.Run`, actors, timers or `Parallel.ForEach`. Do not keep a transaction or group open across `await` or callbacks.
 
@@ -32,7 +40,7 @@ Read [packages and testing](references/ecosystem.md) before adding a wrapper, AP
 
 ## Required output when implementing
 
-- Target record, thin host adapter and executed pure tests covering calculation boundaries and identity preservation.
+- Target record, independent domain DLL and executed pure tests for calculation boundaries and identity preservation. Compilation alone is incomplete.
 - For writes/deferred work: stale-input, transaction/undo and cancellation policies.
 - For performance claims: measurements on representative models.
 - Build every requested target; fix errors and rerun affected checks. Report compilation, tests, host/UI execution and deployment separately as **passed, failed or unverified**. Deployment succeeds only after every required copy succeeds.
