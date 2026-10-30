@@ -1,6 +1,6 @@
 # Revit plugin smoke experiment
 
-The current Codex multi-version experiment uses [this outcome prompt](data-device-multiversion/prompt.txt); its [results](data-device-multiversion/RESULTS.md) report the full five-run sample against the final lean wording.
+The current Codex multi-version experiment uses [this outcome prompt](data-device-multiversion/prompt.txt); its [results](data-device-multiversion/RESULTS.md) report the full five-run sample against the final lean wording. The public copy substitutes `<REVIT_API_ROOT>` for the local reference path. Resolve it before freezing new runs; historical prompt hashes refer to the unchanged original inputs retained outside this repository.
 
 ## Original Claude Code smoke procedure
 

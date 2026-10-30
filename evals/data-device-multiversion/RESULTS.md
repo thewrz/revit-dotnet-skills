@@ -19,4 +19,4 @@ All five read the relevant Revit, version, execution, project-structure and C# s
 
 The supplied 2026 DB reference is 26.5 and requires .NET 10. Missing public UI references were supplemented in a read-only overlay with Nice3point 2024.3.60 and 2026.4.10; the latter is an earlier same-year build. Compilation produced zero errors, with one or two reference-conflict warnings for 2026. Licensed-host loading, UI and deployment remain unverified.
 
-Full outputs, hashes, exact commands, checks, earlier exploratory trials and input provenance: [/home/adam/github/revit-dotnet-skills-reviews/2026-10-29-iterations/RESULTS.md](/home/adam/github/revit-dotnet-skills-reviews/2026-10-29-iterations/RESULTS.md).
+Full outputs, hashes, exact commands, checks, earlier exploratory trials and input provenance are retained outside the repository. The published prompt redacts the local reference root; the original frozen inputs and hashes remain unchanged in those records.

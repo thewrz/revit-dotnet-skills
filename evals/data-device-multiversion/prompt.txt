@@ -1,3 +1,3 @@
 Create a Revit C# add-in for our Revit 2024 and Revit 2026 installations from one source tree. Add its own ribbon with a single button. Pressing it shows a modern-looking dialog with the active model's placed Data Devices: the total and counts by family/type, a purchasing quantity that adds 10% spares rounded up separately for each group, and a copyable audit report containing the counted devices' element IDs. Exclude linked models and leave the model unchanged.
 
-Build both deliverables in this workspace and provide installation instructions. Reference files for our installations are under /home/adam/github/revit-api/. Make and state reasonable assumptions.
+Build both deliverables in this workspace and provide installation instructions. Reference files for our installations are under <REVIT_API_ROOT>/. Make and state reasonable assumptions.

@@ -8,7 +8,7 @@ Pure classes can share source with portable tests or live in a separate core pro
 
 Inspect resolved dependencies and staged files. Include required managed/native dependencies and resources; exclude build-only and verified host/runtime assets. A `Microsoft.*` name proves neither category. Remove unnecessary package references at their source. Resolve add-in-owned files from the [loaded assembly location](https://learn.microsoft.com/en-us/dotnet/api/system.reflection.assembly.location) or a root supplied by the loader; verify lookup after relocation.
 
-Revit supplies `RevitAPI.dll` and public `RevitAPIUI.dll` (not internal `RevitUIAPI.dll`). Set `<Private>false</Private>` on assembly references. For reference-only API packages, use `ExcludeAssets="runtime"` with `PrivateAssets="all"`. [PrivateAssets controls propagation, not copying](https://learn.microsoft.com/en-us/nuget/consume-packages/package-references-in-project-files#controlling-dependency-assets); package build targets can copy files separately. Reject staged Revit API DLLs.
+Revit supplies `RevitAPI.dll` and public `RevitAPIUI.dll`. Set `<Private>false</Private>` on assembly references. For reference-only API packages, use `ExcludeAssets="runtime"` with `PrivateAssets="all"`. [PrivateAssets controls propagation, not copying](https://learn.microsoft.com/en-us/nuget/consume-packages/package-references-in-project-files#controlling-dependency-assets); package build targets can copy files separately. Reject staged Revit API DLLs.
 
 ## Single-file choices
 

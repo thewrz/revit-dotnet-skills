@@ -29,6 +29,6 @@ The initial plan called for three consecutive passing runs. Following the user's
 - [x] Finish the fixed blind sample and independently verify builds, boundaries and behavior; report successes and failures together.
 - [x] Record all results, word counts, remaining host limits and reproducible commands.
 
-Artifacts: `/home/adam/github/revit-dotnet-skills-reviews/2026-10-29-iterations/`. Each run records revision, model/effort, prompt hash, 40-skill catalog, tool events and untouched source. Private authentication is deleted after each run and never copied into artifacts.
+Artifacts are retained outside the repository. Each run records revision, model/effort, prompt hash, 40-skill catalog, tool events and untouched source. Private authentication is deleted after each run and never copied into artifacts.
 
 User steering after iteration 3: keep the customization generic; do not grow skill prose around benchmark arithmetic or try to preclude errors that a compiler can diagnose. Remove rounding/quantity/large-ID test prescriptions from the plugin; retain those cases in the evaluator. Keep Revit-specific host boundaries, documented API facts and the compile → correct → rebuild loop. A compact dependency example is guidance, not a mandatory project count. Score final artifacts, not first-attempt compilation.
