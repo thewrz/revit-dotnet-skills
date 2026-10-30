@@ -1,42 +1,69 @@
-# Blind workflow trials
+# Blind Revit workflow trials
 
-## Method
+## Method and scope
 
-Baseline: `76a500a`. Model: `gpt-6-luna`, medium effort. Each fresh native Codex session receives the installed plugin catalog, an empty workspace, public API references and one frozen outcome prompt. Conversation history, previous outputs and grading criteria are withheld. Each scenario has five samples per revision and a 1,200-second generation ceiling; failures remain in the record.
+Fresh native Codex sessions used `gpt-6-luna` at medium effort, the installed 40-skill plugin, a frozen outcome prompt, public API references and an empty workspace. They received no conversation history, earlier implementations or grading criteria. Each generation had a 1,200-second ceiling. Evaluators preserved generated source and exercised production code or exact extracted loader bodies; test adapters were identified separately from host execution.
 
-The scenarios implement a modeless editing tool, a relocatable multi-runtime package, and terminal plus Visual Studio live development. Matching public API/UI reference pairs cover Revit 2024.3.60, 2025.4.60 and 2027.3.0. The original counter and same-year runtime migration are holdouts. Generation outputs are preserved unchanged; evaluators may compile unchanged production source into independent probes.
+Baseline and candidates 1–3 each have five samples for modeless editing, multi-runtime packaging and live development. Candidate 4 changes only the live-development reference and has five additional live samples. Eight counter/migration holdouts and four paired inherited-guidance checks bring the total to **77 evaluable generations**. These small cohorts show observed outcomes, not a reliability guarantee or a statistically established causal effect.
 
-Linux builds, portable runtime tests, installed-tree checks and source inspection are separate evidence categories. Actual Windows/Revit and Visual Studio behavior remains unverified. A working portable replacement loader does not establish debugger Hot Reload. Initial CLI parser failures occurred before model execution and are excluded from generated-sample denominators.
+Reference pairs cover Revit 2024.3.60, 2025.4.60 and 2027.3.0, using SDK 10.0.111. The counter holdout deliberately retains a mixed 2026 API/UI pair and requires disclosure. Compilation, portable execution, filesystem installation simulation and source review are distinct evidence classes. **Windows/Revit and Visual Studio execution remain unverified throughout.**
 
-## First candidate: explicit contracts, fewer words
+Three initial CLI parser failures never reached the model. A later temporary-storage failure truncated one live transcript; that attempt remains preserved as an infrastructure exception and was replaced with a fresh run using identical inputs. Interrupted evaluator checks were rerun after storage recovery. No generated source was repaired to improve a score. Manifest/hash checks verified model, effort, revision, prompts, references and source preservation; rebuilt binaries are distinguished from the original exported artifacts.
 
-Initial generated samples compiled and tested pure calculations while omitting required command attributes, accessing model state from modeless click handlers, or retaining previews across document/lifetime changes. Other samples emitted unsupported bundle XML structure or documented a debugger attach workflow without its startup prerequisites. These are reasons to test host integration contracts beyond successful compilation.
+## Revisions and size
 
-The candidate replaces existing prose with imperative guidance for command metadata, callback-owned validation, request outcomes, installed discovery and executable reload lifecycle checks. The Revit entry point decreases from 443 to 439 words; all Revit guidance decreases from 3,564 to 3,511 words. Its behavioral improvement is **not yet established**; the fixed sample comparison remains in progress.
+| Revision | Change | Revit entry / total words |
+|---|---|---:|
+| `76a500a` | Frozen baseline | 443 / 3,564 |
+| `3814174` | Explicit command, callback, packaging and workflow contracts | 439 / 3,511 |
+| `6a2da52` | Proposal inputs, resource ownership and current-state activation | 434 / 3,527 |
+| `3337a26` | Proposal/request structure, binary-retention policy and attach prerequisite | 438 / 3,540 |
+| `8523d97` | Explicit supported Visual Studio minimum for .NET 10 | 438 / 3,548 |
 
-## Evidence and adjudication
+The inherited consistency corrections at `ca08312` precede the last two revisions. Modeless and packaging results below belong to `3337a26`; live results belong to `8523d97`. Unchanged scenarios were not represented as newly tested at the last revision.
 
-- [Autodesk command attributes](https://help.autodesk.com/cloudhelp/2026/ENU/Revit-API/files/Revit_API_Developers_Guide/Introduction/Add_In_Integration/Revit_API_Revit_API_Developers_Guide_Introduction_Add_In_Integration_Attributes_html.html) require a declared transaction mode. Choose the mode for the command's work; a UI-opening command need not be Manual solely because a later external event performs writes.
-- [Autodesk External Events](https://help.autodesk.com/cloudhelp/2026/ENU/Revit-API/files/Revit_API_Developers_Guide/Advanced_Topics/Revit_API_Revit_API_Developers_Guide_Advanced_Topics_External_Events_html.html) establish deferred callback execution. Document/lifetime binding and request completion policies are engineering guidance inferred from that boundary.
-- [Autodesk's bundle example](https://blog.autodesk.io/revit-api-understanding-the-role-of-seriesmin-and-seriesmax-in-plugin-deployment/) places per-year runtime requirements beside the component entry. [Tammik's manifest guidance](https://blog.autodesk.io/addin-file-learning-python-and-ifcjs/) confirms relative and colocated DLL paths: a reviewer recommendation to require absolute paths was rejected.
-- [Microsoft's debugger prerequisites](https://learn.microsoft.com/en-us/visualstudio/debugger/supported-code-changes-csharp#unsupported-scenarios) distinguish attach from debugger launch. [Cooperative unload guidance](https://learn.microsoft.com/en-us/dotnet/standard/assembly/unloadability) motivates testing the actual loader, collection and recovery separately from business calculations.
+## Observed outcomes
 
-Review findings about simultaneous installation of explicitly alternative routes and future unused dependencies are not treated as failures of the requested implementation. One evaluator used a different SDK environment; its build failure was reproduced and corrected with the frozen SDK, rather than changing generated code or suppressing the SDK check.
+Each count is out of five runs for that scenario. Passes apply only to the named evidence boundary. Criteria are not combined into an overall score.
 
-## Second candidate: validate state and delivered behavior
+| Criterion | Baseline | Latest tested cohort |
+|---|---|---|
+| Modeless command metadata | 1 pass, 4 failures | 5 passes |
+| Modeless API-context boundaries, source review | 4 passes, 1 failure | 5 passes |
+| Modeless confirmed stale-model/value failures | 2 failures | 0 failures; all 5 retain proposal-field/UI ambiguities |
+| Modeless request/lifetime outcomes | 2 failures, 3 partial | 1 failure, 3 partial, 1 pass |
+| Modeless mutation/Undo handling, source review | 3 passes, 2 partial | 4 passes, 1 unchanged-write failure |
+| Packaging command metadata | 2 passes, 3 failures | 5 passes |
+| Packaging bundle structure/year selection | 3 passes, 2 failures | 5 passes |
+| Packaging advertised all-target output | 4 passes, 1 failure | 5 passes |
+| Packaging relocated per-user manifest paths | 5 passes | 4 passes, 1 failure |
+| Live command metadata/API boundary | 3 passes, 2 gaps | 5 passes |
+| Debugger setup completeness, source review | 1 pass, 1 partial, 3 gaps | 4 passes, 1 gap |
+| Live current-selection activation recovery | 4 identified gaps | 2 identified gaps |
+| Live cold-start/discovery path | 3 supported, 2 gaps | 3 supported, 2 gaps |
+| Prior-generation collection observed portably | 3 observed, 2 unproven | 1 observed, 4 unproven |
+| Live request/completion findings | 2 primary findings | 4 primary findings |
 
-The first candidate's five modeless and five packaging samples all declare command transaction attributes; the corresponding baseline counts were one and two out of five. This is compiled-metadata evidence, not host execution. Other failures remain: an exact resource-reader probe misses an adjacent file when loaded by a separate host, one bundle shortens the release identifier, and a replacement loader publishes a candidate before testing the state currently displayed. The first candidate's live-development series is still in progress; its full comparison remains pending.
+Portable modeless domain checks and individual packaging target builds passed across the compared cohorts. All five latest live loaders demonstrated changed business behavior portably. Improvement is **mixed**: metadata, bundle construction and debugger instructions improved; timeout handling, collection evidence and deployment remain inconsistent. Later samples still contain a stranded request, no-op write rollback, stale absolute manifest paths, malformed deployment XML or a missing production payload. Successful compilation and self-authored checks missed several of these defects.
 
-The second candidate clarifies proposal preconditions, resource ownership, full bundle series identifiers and activation against current state. It asks agents to exercise documented commands from clean outputs and to compare binary retention with retargeting when advising on runtime migration. These replace existing passages; there is no benchmark-specific application or rule in the skill. It requires the same fixed five-sample comparison before an improvement claim.
+## Holdouts and inherited guidance
 
-[Microsoft's application base-directory documentation](https://learn.microsoft.com/en-us/dotnet/api/system.appdomain.basedirectory) and [assembly-location contract](https://learn.microsoft.com/en-us/dotnet/api/system.reflection.assembly.location) support separating host and library resource paths; a loader must supply the resource root when an assembly has no file location. Current-state activation and rollback are engineering guidance derived from the requested recovery contract, rather than built-in guarantees of an assembly load context.
+The migration holdout improved from three of five gates to five of five. The final answer distinguishes validated retention of an existing .NET 8 binary from retargeting, adds the separate 2027 API target and uses the current machine-wide discovery location. This is advice review, not an executed migration.
 
-## Third candidate: explicit proposal and startup contracts
+The extended counter remains a failed regression check: three candidate samples use floating-point arithmetic that returns 56 instead of 55 for a 50-item group with 10% spares. The baseline calculates that boundary correctly. Several samples also leave aggregation coupled to the command. These findings concern the expanded calculation task; they do not invalidate the separately user-tested simple counter. The skill retains generic domain separation and testing guidance rather than adding a counting-specific recipe.
 
-The second candidate's five packaging implementations pass the core portable artifact checks; one supplies malformed README command examples. Modeless callback-context checks improve to five of five, but stale-proposal checks are less consistent than the first candidate, and one implementation attempts unchanged writes. These results do not establish uniform improvement. The third candidate states the proposal's required data and the comparison performed at Apply, replaces generic completion language with request states, and names Microsoft's documented prelaunch attach setting. The compatibility table now distinguishes existing-binary retention directly from new matching targets.
+The [independent inherited-guidance audit](2026-10-29-inherited-guidance-audit.md) covered 95 files and led to five narrow corrections. Both package-update and bare-provider startup checks pass before and after those corrections: preserved behavior, not measured improvement. CPM, shared versions, explicit configuration and other intentional institutional practices remain intact.
 
-The Revit entry point is 438 words and all Revit guidance is 3,540 words, both below baseline. Five fresh samples per core scenario and the frozen holdouts will assess this combined revision; prior failures remain in the comparison. The separate inherited-guidance corrections are documented in [the consistency audit](2026-10-29-inherited-guidance-audit.md).
+## Sources and review adjudication
 
-## Focused toolchain correction
+- [Autodesk command attributes](https://help.autodesk.com/cloudhelp/2026/ENU/Revit-API/files/Revit_API_Developers_Guide/Introduction/Add_In_Integration/Revit_API_Revit_API_Developers_Guide_Introduction_Add_In_Integration_Attributes_html.html) require a transaction mode. A UI-opening command may validly use ReadOnly; Manual is not universal.
+- [External Events](https://help.autodesk.com/cloudhelp/2026/ENU/Revit-API/files/Revit_API_Developers_Guide/Advanced_Topics/Revit_API_Revit_API_Developers_Guide_Advanced_Topics_External_Events_html.html) motivate callback-owned model access. Proposal-state, cancellation and completion policies are this fork's engineering guidance.
+- [Revit bundle selection](https://blog.autodesk.io/revit-api-understanding-the-role-of-seriesmin-and-seriesmax-in-plugin-deployment/) uses exact `SeriesMin` and ignores `SeriesMax`. Missing `SeriesMax` was not treated as a desktop Revit failure. [Relative manifest paths](https://blog.autodesk.io/addin-file-learning-python-and-ifcjs/) are valid when they resolve in the installed layout.
+- [Microsoft debugger prerequisites](https://learn.microsoft.com/en-us/visualstudio/debugger/supported-code-changes-csharp#unsupported-scenarios), [IDE/SDK compatibility](https://learn.microsoft.com/en-us/dotnet/core/install/windows#net-versions-and-visual-studio) and [cooperative unloading](https://learn.microsoft.com/en-us/dotnet/standard/assembly/unloadability) support checking setup and actual lifecycle behavior separately.
+- [Autodesk's runtime transition](https://blog.autodesk.io/autodesk-desktop-products-2025-2026-net-10-updates/) and [2027 SDK guidance](https://blog.autodesk.io/revit-2027-sdk-net-10-api-changes-and-additions/) support update-aware compatibility and deployment decisions.
 
-Repeated live-development samples document Visual Studio 2022 for a .NET 10 target despite current [Microsoft IDE/SDK support requirements](https://learn.microsoft.com/en-us/dotnet/core/install/windows#net-versions-and-visual-studio). The live-development reference now states the supported minimum explicitly. This changes only that reference; five additional live-development samples use the identical frozen prompt and inputs. Modeless and packaging results remain attributed to the third candidate rather than represented as fresh tests of this revision.
+Reviewers' unsupported wrapper-identity assumptions, universal Pending-finalizer demands and an incorrectly invoked PowerShell array argument were rejected or qualified. Applying the visible preview was distinguished from writing an undisplayed stale proposal. Same-current-selection recovery was distinguished from guaranteeing every future input. Source references and exact invocation semantics were checked before accepting findings.
+
+## Remaining host validation
+
+Use disposable models to exercise document switching, queued cancellation, reopening and Undo; load relocated packages on each declared host/update; and perform repeated terminal replacements and Visual Studio edits with visible changed behavior, failure recovery and a clean production restart. Portable builds and loader probes cannot establish those Windows/Revit outcomes.
