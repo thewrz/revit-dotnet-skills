@@ -3,6 +3,9 @@ name: dotnet-slopwatch
 description: Use Slopwatch to detect LLM reward hacking in .NET code changes. Run after every code modification to catch disabled tests, suppressed warnings, empty catch blocks, and other shortcuts that mask real problems.
 ---
 
+> **Revit scope:** For Revit work, first read [revit-development](../revit-development/SKILL.md). Apply this skill only within the selected host/runtime and API-context boundaries; server examples concern companion services. Institutional preferences below remain intentional.
+
+
 # Slopwatch: LLM Anti-Cheat for .NET
 
 ## When to Use This Skill

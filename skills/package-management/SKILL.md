@@ -4,6 +4,9 @@ description: Manage NuGet packages using Central Package Management (CPM) and do
 user-invocable: false
 ---
 
+> **Revit scope:** For Revit work, first read [revit-development](../revit-development/SKILL.md). Apply this skill only within the selected host/runtime and API-context boundaries; server examples concern companion services. Institutional preferences below remain intentional.
+
+
 # NuGet Package Management
 
 ## When to Use This Skill

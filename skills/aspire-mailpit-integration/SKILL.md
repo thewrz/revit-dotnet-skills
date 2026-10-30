@@ -4,6 +4,9 @@ description: Test email sending locally using Mailpit with .NET Aspire. Captures
 user-invocable: false
 ---
 
+> **Revit scope:** For Revit work, first read [revit-development](../revit-development/SKILL.md). Apply this skill only within the selected host/runtime and API-context boundaries; server examples concern companion services. Institutional preferences below remain intentional.
+
+
 # Email Testing with Mailpit and .NET Aspire
 
 ## When to Use This Skill

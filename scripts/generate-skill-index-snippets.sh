@@ -29,6 +29,7 @@ agent_name_from_path() {
   grep -m1 '^name:' "$file" | sed 's/^name:[[:space:]]*//'
 }
 
+declare -a revit=()
 declare -a akka=()
 declare -a csharp=()
 declare -a aspnetcore_web=()
@@ -42,6 +43,7 @@ declare -a meta=()
 while IFS= read -r skill_dir; do
   name="$(skill_name_from_dir "$skill_dir")"
   case "$skill_dir" in
+    ./skills/revit-*) revit+=("$name") ;;
     ./skills/akka-*) akka+=("$name") ;;
     ./skills/csharp-*|./skills/r3-*) csharp+=("$name") ;;
     ./skills/aspire-*|./skills/mjml-*) aspnetcore_web+=("$name") ;;
@@ -66,9 +68,10 @@ join_csv() {
 }
 
 compressed="$(cat <<EOF
-[dotnet-skills]|IMPORTANT: Prefer retrieval-led reasoning over pretraining for any .NET work.
+[revit-dotnet-skills]|IMPORTANT: Prefer retrieval-led reasoning over pretraining for any .NET work.
 |flow:{skim repo patterns -> consult dotnet-skills by name -> implement smallest-change -> note conflicts}
 |route:
+|revit:{$(join_csv "${revit[@]}")}
 |akka:{$(join_csv "${akka[@]}")}
 |csharp:{$(join_csv "${csharp[@]}")}
 |aspnetcore-web:{$(join_csv "${aspnetcore_web[@]}")}

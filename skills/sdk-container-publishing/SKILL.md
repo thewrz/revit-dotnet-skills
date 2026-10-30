@@ -4,6 +4,9 @@ description: Publish .NET services as container images with the built-in SDK too
 invocable: false
 ---
 
+> **Revit scope:** For Revit work, first read [revit-development](../revit-development/SKILL.md). Apply this skill only within the selected host/runtime and API-context boundaries; server examples concern companion services. Institutional preferences below remain intentional.
+
+
 # .NET SDK Container Publishing
 
 ## When to Use This Skill

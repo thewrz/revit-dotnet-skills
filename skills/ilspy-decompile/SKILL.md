@@ -4,6 +4,9 @@ description: Understand implementation details of .NET code by decompiling assem
 allowed-tools: Bash(dnx:*)
 ---
 
+> **Revit scope:** For Revit work, first read [revit-development](../revit-development/SKILL.md). Apply this skill only within the selected host/runtime and API-context boundaries; server examples concern companion services. Institutional preferences below remain intentional.
+
+
 # .NET Assembly Decompilation with ILSpy
 
 Use this skill to understand how .NET code works internally by decompiling compiled assemblies.

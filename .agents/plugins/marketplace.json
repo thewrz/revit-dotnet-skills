@@ -1,11 +1,11 @@
 {
-  "name": "dotnet-skills",
+  "name": "revit-dotnet-skills",
   "interface": {
-    "displayName": ".NET Skills"
+    "displayName": "Revit C# Development Skills"
   },
   "plugins": [
     {
-      "name": "dotnet-skills",
+      "name": "revit-dotnet-skills",
       "source": {
         "source": "local",
         "path": "./"
