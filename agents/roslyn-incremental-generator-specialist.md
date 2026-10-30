@@ -173,7 +173,7 @@ return new FooSpec(
     ImmutableEquatableArray.Create(messageTypes));
 ```
 
-**Why this matters**: immutable collections and their builders generally carry overhead during construction compared to their mutable counterparts. For example, `ImmutableHashSet.Builder.Add` is roughly 1.4–3× slower than `HashSet.Add`, and `ImmutableArray.Create` from a mutable `List<T>` involves an extra copy step. Since parser work is re-executed whenever a file changes, internal construction should use the cheapest mutable container available; immutability and value equality are only required where the incremental engine caches and compares model snapshots. The benchmark above illustrates the pattern with `HashSet<T>` vs `ImmutableHashSet<T>`, but the same principle applies across other collection types.
+**Why this matters**: immutable collections and their builders generally carry overhead during construction compared to their mutable counterparts. For example, `ImmutableHashSet.Builder.Add` is roughly 1.4–3× slower than `HashSet.Add`, and `ImmutableArray.Create` from a mutable `List<T>` involves an extra copy step. When parser work runs, internal construction may use a mutable container before freezing the result; immutability and value equality are only required where the incremental engine caches and compares model snapshots. The benchmark above illustrates the pattern with `HashSet<T>` vs `ImmutableHashSet<T>`, but the same principle applies across other collection types.
 
 | Concern | Internal parser/utility code | Pipeline-facing spec |
 |--------|------------------------------|----------------------|
@@ -491,7 +491,7 @@ When implementing or changing a generator, produce:
 
 ### Testing incremental caching
 
-Verify that two runs with identical inputs produce identical outputs, confirming cached results are reused.
+Verify output stability separately from cache reuse. Identical output alone does not prove a cached step was reused; use tracked incremental-step run reasons to assert cache behavior.
 
 ```csharp
 [Fact]
@@ -507,8 +507,8 @@ public void Generator_ProducesCachedOutput_OnSecondRun()
     var output1 = result1.GetRunResult().GeneratedTrees.Single().ToString();
     var output2 = result2.GetRunResult().GeneratedTrees.Single().ToString();
     
-    output1.Should().Be(output2); // Same output = cache hit
+    output1.Should().Be(output2); // Stable output; use tracked step reasons to assert cache reuse
 }
 ```
 
-This catches non-equatable objects (syntax nodes, symbols) in models or missing `WithComparer` calls.
+This checks output stability only. Inspect tracked incremental-step run reasons to diagnose whether models/comparers allow cached steps to be reused.

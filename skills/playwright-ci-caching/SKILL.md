@@ -60,11 +60,18 @@ Playwright browsers (~400MB) must be downloaded on every CI run by default. This
     path: ~/.cache/ms-playwright
     key: ${{ runner.os }}-playwright-${{ env.PlaywrightVersion }}
 
+- name: Install Playwright Linux Dependencies
+  if: runner.os == 'Linux'
+  shell: pwsh
+  run: pwsh bin/Release/netX/playwright.ps1 install-deps
+
 - name: Install Playwright Browsers
   if: steps.playwright-cache.outputs.cache-hit != 'true'
   shell: pwsh
-  run: ./build/playwright.ps1 install --with-deps
+  run: pwsh bin/Release/netX/playwright.ps1 install
 ```
+
+Build the test project before these steps so the generated `playwright.ps1` exists. Replace `netX` with its target framework. The cache stores browser binaries; a fresh Linux runner still needs system dependencies installed even when the browser cache hits.
 
 ### Multi-OS GitHub Actions
 
@@ -104,67 +111,39 @@ For workflows that run on multiple operating systems:
     cacheHitVar: 'PlaywrightCacheHit'
 
 - task: PowerShell@2
+  displayName: 'Install Playwright Linux Dependencies'
+  condition: eq(variables['Agent.OS'], 'Linux')
+  inputs:
+    targetType: 'inline'
+    script: 'pwsh bin/Release/netX/playwright.ps1 install-deps'
+
+- task: PowerShell@2
   displayName: 'Install Playwright Browsers'
   condition: ne(variables['PlaywrightCacheHit'], 'true')
   inputs:
-    filePath: 'build/playwright.ps1'
-    arguments: 'install --with-deps'
+    targetType: 'inline'
+    script: 'pwsh bin/Release/netX/playwright.ps1 install'
 ```
 
-## Helper Script: playwright.ps1
+Build the test project before these steps. Replace `netX` with its target framework. Linux system dependencies are installed on each fresh job; only browser downloads are skipped on a cache hit.
 
-Create a `build/playwright.ps1` script that discovers and runs the Playwright CLI. This abstracts away the Playwright CLI location which varies by project structure.
+## Use the Generated Playwright Script
 
-```powershell
-# build/playwright.ps1
-# Discovers Microsoft.Playwright.dll and runs the bundled Playwright CLI
-
-param(
-    [Parameter(ValueFromRemainingArguments = $true)]
-    [string[]]$Arguments
-)
-
-# Find the Playwright DLL (after dotnet build/restore)
-$playwrightDll = Get-ChildItem -Path . -Recurse -Filter "Microsoft.Playwright.dll" -ErrorAction SilentlyContinue |
-    Select-Object -First 1
-
-if (-not $playwrightDll) {
-    Write-Error "Microsoft.Playwright.dll not found. Run 'dotnet build' first."
-    exit 1
-}
-
-$playwrightDir = $playwrightDll.DirectoryName
-
-# Find the playwright CLI (path varies by OS and node version)
-$playwrightCmd = Get-ChildItem -Path "$playwrightDir/.playwright/node" -Recurse -Filter "playwright.cmd" -ErrorAction SilentlyContinue |
-    Select-Object -First 1
-
-if (-not $playwrightCmd) {
-    # Try Unix executable
-    $playwrightCmd = Get-ChildItem -Path "$playwrightDir/.playwright/node" -Recurse -Filter "playwright" -ErrorAction SilentlyContinue |
-        Where-Object { $_.Name -eq "playwright" } |
-        Select-Object -First 1
-}
-
-if (-not $playwrightCmd) {
-    Write-Error "Playwright CLI not found in $playwrightDir/.playwright/node"
-    exit 1
-}
-
-Write-Host "Using Playwright CLI: $($playwrightCmd.FullName)"
-& $playwrightCmd.FullName @Arguments
-```
+The .NET package generates `playwright.ps1` in the test project's output directory. Invoke that script directly after building instead of adding a custom launcher.
 
 Usage:
 ```bash
 # Install browsers
-./build/playwright.ps1 install --with-deps
+pwsh bin/Release/netX/playwright.ps1 install
+
+# Install Linux system dependencies (run on each fresh Linux runner)
+pwsh bin/Release/netX/playwright.ps1 install-deps
 
 # Install specific browser
-./build/playwright.ps1 install chromium
+pwsh bin/Release/netX/playwright.ps1 install chromium
 
 # Show installed browsers
-./build/playwright.ps1 install --dry-run
+pwsh bin/Release/netX/playwright.ps1 install --list
 ```
 
 ## Prerequisites
@@ -180,7 +159,7 @@ This pattern assumes:
    </Project>
    ```
 
-2. **Project has been built** before running `playwright.ps1` (so DLLs exist)
+2. **Project has been built** before running the generated `playwright.ps1`
 
 3. **PowerShell available** on CI agents (pre-installed on GitHub Actions and Azure DevOps)
 
@@ -210,9 +189,9 @@ The cached browsers don't match the Playwright SDK version. This happens when:
 
 Fix: Ensure the Playwright version is in the cache key.
 
-### playwright.ps1 can't find the DLL
+### Generated playwright.ps1 is missing
 
-Run `dotnet build` or `dotnet restore` before running the script. The Playwright DLL only exists after NuGet restore.
+Run `dotnet build` before running the generated script. It is placed under `bin/<Configuration>/<TFM>/`.
 
 ## References
 

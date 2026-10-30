@@ -15,13 +15,15 @@ Value objects should **always be `readonly record struct`** for performance and 
 
 ```csharp
 // Single-value object
-public readonly record struct OrderId(string Value)
+public readonly record struct OrderId
 {
-    public OrderId(string value) : this(
-        !string.IsNullOrWhiteSpace(value)
-            ? value
-            : throw new ArgumentException("OrderId cannot be empty", nameof(value)))
+    public string Value { get; }
+
+    public OrderId(string value)
     {
+        Value = !string.IsNullOrWhiteSpace(value)
+            ? value
+            : throw new ArgumentException("OrderId cannot be empty", nameof(value));
     }
 
     public override string ToString() => Value;
@@ -31,12 +33,17 @@ public readonly record struct OrderId(string Value)
 }
 
 // Multi-value object
-public readonly record struct Money(decimal Amount, string Currency)
+public readonly record struct Money
 {
-    public Money(decimal amount, string currency) : this(
-        amount >= 0 ? amount : throw new ArgumentException("Amount cannot be negative", nameof(amount)),
-        ValidateCurrency(currency))
+    public decimal Amount { get; }
+    public string Currency { get; }
+
+    public Money(decimal amount, string currency)
     {
+        Amount = amount >= 0
+            ? amount
+            : throw new ArgumentException("Amount cannot be negative", nameof(amount));
+        Currency = ValidateCurrency(currency);
     }
 
     private static string ValidateCurrency(string currency)
@@ -113,12 +120,19 @@ public readonly record struct CustomerId(Guid Value)
 }
 
 // Quantity with units
-public readonly record struct Quantity(int Value, string Unit)
+public readonly record struct Quantity
 {
-    public Quantity(int value, string unit) : this(
-        value >= 0 ? value : throw new ArgumentException("Quantity cannot be negative"),
-        !string.IsNullOrWhiteSpace(unit) ? unit : throw new ArgumentException("Unit cannot be empty"))
+    public int Value { get; }
+    public string Unit { get; }
+
+    public Quantity(int value, string unit)
     {
+        Value = value >= 0
+            ? value
+            : throw new ArgumentException("Quantity cannot be negative", nameof(value));
+        Unit = !string.IsNullOrWhiteSpace(unit)
+            ? unit
+            : throw new ArgumentException("Unit cannot be empty", nameof(unit));
     }
 
     public override string ToString() => $"{Value} {Unit}";
@@ -127,7 +141,7 @@ public readonly record struct Quantity(int Value, string Unit)
 
 **Why `readonly record struct` for value objects:**
 - **Value semantics**: Equality based on content, not reference
-- **Stack allocation**: Better performance, no GC pressure
+- **Avoid a separate object allocation in some uses**: actual storage and performance depend on context; benchmark
 - **Immutability**: `readonly` prevents accidental mutation
 - **Pattern matching**: Works seamlessly with switch expressions
 
@@ -136,6 +150,8 @@ public readonly record struct Quantity(int Value, string Unit)
 Value objects aren't just for identifiers. They're equally valuable for **enforcing domain constraints** on strings, numbers, and URIs — making illegal states unrepresentable at the type level.
 
 **Key principle: validate at construction, trust everywhere else.** Once you have an `AbsoluteUrl`, every consumer knows it's valid without re-checking.
+
+This policy assumes construction through the validating constructor. Every struct still has a zero-initialized `default` value that bypasses that constructor; reject invalid defaults at external/deserialization boundaries. `readonly` also does not make referenced objects deeply immutable.
 
 ```csharp
 // AbsoluteUrl - enforces HTTP/HTTPS scheme constraints

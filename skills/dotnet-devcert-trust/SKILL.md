@@ -22,18 +22,18 @@ Use this skill when:
 
 ## The Problem
 
-On Windows and macOS, `dotnet dev-certs https --trust` handles everything automatically — it generates the certificate, installs it in the user store, and adds it to the system trust store. On Linux, **it does almost nothing useful**. The command generates the cert and places it in the user store, but:
+On Windows and macOS, `dotnet dev-certs https --trust` handles trust setup through the platform certificate store. Linux behavior depends on the SDK version, distribution, and browser trust store. Starting with .NET 9, the command supports Linux trust on supported configurations; older or unsupported setups may require the manual fallback below. Verify trust with `dotnet dev-certs https --check --trust` (a plain `--check` only verifies certificate presence). See [Microsoft's Linux trust guidance](https://learn.microsoft.com/en-us/aspnet/core/security/enforcing-ssl#trust-https-certificate-on-linux) and [`dotnet dev-certs`](https://learn.microsoft.com/en-us/dotnet/core/tools/dotnet-dev-certs). When Linux automatic trust is unsupported or incomplete, the command may generate the cert without installing it in the system CA bundle or browser store:
 
 1. It does **not** export the certificate to the system CA directory
 2. It does **not** run `update-ca-certificates` to rebuild the CA bundle
 3. It does **not** add the cert to browser trust stores (NSS/NSSDB)
-4. The `--trust` flag silently succeeds but the cert remains untrusted
+4. The `--trust` operation may not update the trust store used by a particular distro or browser
 
-This means .NET applications, OpenSSL, curl, and browsers all reject the dev certificate — even though `dotnet dev-certs https --check` reports it exists.
+If trust verification fails, applications using that trust store can reject the certificate even though `dotnet dev-certs https --check` reports it exists.
 
 ### Why This Surfaces with Aspire 13.1.0+
 
-Prior to Aspire 13.1.0, Redis connections used plaintext. Starting with 13.1.0, Aspire enables TLS on Redis by default. If your dev cert isn't trusted at the system level, Redis connections fail immediately with:
+Prior to Aspire 13.1.0, Redis connections used plaintext. Starting with 13.1.0, Aspire enables TLS on Redis by default and uses the ASP.NET Core development certificate when available and trusted. If the Redis client cannot validate the presented certificate (for example, because its issuer is not trusted), the connection can fail with:
 
 ```
 System.Security.Authentication.AuthenticationException:
@@ -274,13 +274,13 @@ WSL2 runs a real Linux kernel with its own certificate store — separate from t
 
 ### Redis TLS (Aspire 13.1.0+)
 
-Aspire 13.1.0 enables TLS on Redis by default. If you see:
+Aspire 13.1.0 enables TLS on Redis by default and uses the ASP.NET Core development certificate when available and trusted. If the Redis client cannot validate that certificate, you may see:
 
 ```
 UntrustedRoot
 ```
 
-in Redis connection errors, the dev cert isn't trusted at the system level. Run the full recovery procedure above.
+in Redis connection errors, check the trust chain and endpoint hostname from the Redis client's environment. Run the recovery procedure above if the issuing development certificate is not trusted there. See the [Aspire 13.1 certificate notes](https://aspire.dev/whats-new/aspire-13-1/).
 
 ### Aspire Dashboard HTTPS
 
@@ -380,11 +380,11 @@ sudo update-ca-certificates
 
 ### 5. Using --trust and assuming it worked
 
-**Symptom:** `dotnet dev-certs https --trust` returns exit code 0 but nothing is actually trusted.
+**Symptom:** `dotnet dev-certs https --trust` returns success but a specific application still rejects the certificate.
 
-**Cause:** On Linux, `--trust` attempts to add the cert to the OpenSSL trust store but **does not call `update-ca-certificates`**. The operation "succeeds" from dotnet's perspective but the bundle remains unchanged.
+**Cause:** Linux trust integration varies by SDK, distribution, and browser. The OS trust bundle or browser store may not have been updated.
 
-**Fix:** Don't rely on `--trust` on Linux. Follow the manual procedure in this skill.
+**Fix:** Run `dotnet dev-certs https --check --trust`, then follow the distribution-specific manual procedure in this skill when trust is still missing.
 
 ## Quick Reference
 

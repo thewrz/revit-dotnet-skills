@@ -24,12 +24,11 @@ Use this skill when:
 
 | Aspect | Schema-Based | Reflection-Based |
 |--------|--------------|------------------|
-| **Examples** | Protobuf, MessagePack, System.Text.Json (source gen) | Newtonsoft.Json, BinaryFormatter |
-| **Type info in payload** | No (external schema) | Yes (type names embedded) |
-| **Versioning** | Explicit field numbers/names | Implicit (type structure) |
-| **Performance** | Fast (no reflection) | Slower (runtime reflection) |
-| **AOT compatible** | Yes | No |
-| **Wire compatibility** | Excellent | Poor |
+| **Contract/type metadata** | Protobuf has an external schema; MessagePack commonly uses keyed contracts; System.Text.Json source generation creates compile-time metadata/code | Depends on serializer and configuration; reflection does not inherently put CLR type names in the payload |
+| **Versioning** | Depends on format and contract rules | Depends on serializer settings and contract evolution |
+| **Performance** | Depends on format, payload, options, and generated/runtime path | Depends on format, payload, and settings |
+| **AOT compatibility** | Supported by selected generated/contract-based paths; verify the chosen package and configuration | Configuration- and library-dependent; verify trimming/AOT support |
+| **Wire compatibility** | Depends on schema/contract evolution rules | Depends on explicit contract and polymorphism settings |
 
 **Recommendation**: Use schema-based serialization for anything that crosses process boundaries.
 
@@ -213,13 +212,12 @@ var order = MessagePackSerializer.Deserialize<Order>(bytes);
 ```csharp
 // Use source generator for AOT
 [MessagePackObject]
-public partial class Order { }  // partial enables source gen
+public partial class Order { }  // Illustrative contract; verify generator requirements for the pinned package
 
-// Configure resolver
+// The current MessagePack-CSharp source generator emits this resolver.
+// StandardResolver also discovers generated formatters in the usual setup.
 var options = MessagePackSerializerOptions.Standard
-    .WithResolver(CompositeResolver.Create(
-        GeneratedResolver.Instance,  // Generated
-        StandardResolver.Instance));
+    .WithResolver(MessagePack.GeneratedMessagePackResolver.Instance);
 ```
 
 ---
@@ -240,7 +238,7 @@ var options = MessagePackSerializerOptions.Standard
 ### Migration Pattern
 
 ```csharp
-// Newtonsoft (reflection-based)
+// Newtonsoft (commonly reflection-based; type metadata is configuration-dependent)
 public class Order
 {
     [JsonProperty("order_id")]
@@ -289,8 +287,8 @@ public sealed record BankTransferPayment(decimal Amount, string AccountNumber) :
 Old code must safely ignore unknown fields:
 
 ```csharp
-// Protobuf/MessagePack: Automatic - unknown fields skipped
-// System.Text.Json: Configure to allow
+// Protobuf/MessagePack: unknown-field handling depends on the schema/contract shape
+// System.Text.Json: configure to allow
 var options = new JsonSerializerOptions
 {
     UnmappedMemberHandling = JsonUnmappedMemberHandling.Skip
@@ -398,12 +396,15 @@ public sealed record OrderCreated(OrderId Id, CustomerId CustomerId);
 // Don't use BinaryFormatter (ever)
 var formatter = new BinaryFormatter();  // Security risk!
 
-// Don't embed type names in wire format
-settings.TypeNameHandling = TypeNameHandling.All;  // Breaks on rename!
+// Avoid CLR type-name metadata in wire contracts unless explicitly required
+settings.TypeNameHandling = TypeNameHandling.All;  // Couples payloads to CLR type identities
 
-// Don't use reflection serialization for hot paths
-JsonConvert.SerializeObject(order);  // Slow, not AOT-compatible
+// Benchmark serializer/options for hot paths; Newtonsoft.Json's reflection-based defaults
+// are not a Native AOT guarantee. Select and verify the serializer for the deployment target.
+JsonConvert.SerializeObject(order);
 ```
+
+Starting with .NET 9, the in-box BinaryFormatter implementation throws `PlatformNotSupportedException`. Do not restore it with the unsupported compatibility package; see [Microsoft's migration guidance](https://learn.microsoft.com/en-us/dotnet/standard/serialization/binaryformatter-migration-guide). For Newtonsoft.Json, avoid accepting untrusted CLR type metadata; `TypeNameHandling` is not a safe default for external payloads.
 
 ---
 

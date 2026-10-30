@@ -327,15 +327,17 @@ Pin the .NET SDK version for consistent builds across all environments.
 
 | Policy | Behavior |
 |--------|----------|
-| `disable` | Exact version required |
-| `patch` | Same major.minor, latest patch |
-| `feature` | Same major, latest minor.patch |
-| `latestFeature` | Same major, latest feature band |
-| `minor` | Same major, latest minor |
-| `latestMinor` | Same major, latest minor |
-| `major` | Latest SDK (not recommended) |
+| `patch` | Use the requested SDK version; if missing, use the latest patch; otherwise fail |
+| `feature` | Use the latest patch in the requested major/minor/feature band; if missing, use the next higher feature band in the same major/minor |
+| `minor` | Try the requested major/minor/feature band, then a higher feature band in that major/minor, then a higher minor and feature band in that major |
+| `major` | Try the requested version and higher feature/minor bands, then a higher major/minor/feature band |
+| `latestPatch` | Use the highest installed patch in the requested major/minor/feature band at or above the requested version |
+| `latestFeature` | Use the highest installed feature band and patch in the requested major/minor at or above the requested version |
+| `latestMinor` | Use the highest installed minor, feature band, and patch in the requested major at or above the requested version |
+| `latestMajor` | Use the highest installed SDK at or above the requested version |
+| `disable` | Do not roll forward; require an exact version match |
 
-**Recommended:** `latestFeature` - Allows patch updates within the same feature band.
+**Recommended:** `latestFeature` when the repository permits newer feature bands within the pinned major/minor; choose a narrower policy when exact feature-band control is required. See [global.json roll-forward](https://learn.microsoft.com/en-us/dotnet/core/tools/global-json#rollforward).
 
 ---
 
@@ -471,7 +473,7 @@ Configure NuGet sources and behavior:
 ```
 
 **Key Settings:**
-- `<clear />` - Remove inherited/default sources for reproducible builds
+- `<clear />` - Remove package sources inherited from parent NuGet.config files; this alone does not lock the resolved dependency graph
 - `disableSourceControlIntegration` - Prevents TFS/Git integration issues
 
 ---

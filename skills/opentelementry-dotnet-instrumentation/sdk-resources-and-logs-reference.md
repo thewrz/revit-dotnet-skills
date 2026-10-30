@@ -333,23 +333,12 @@ app.UseOpenTelemetryPrometheusScrapingEndpoint();
 dotnet add package OpenTelemetry.Exporter.Prometheus.AspNetCore
 ```
 
-### Jaeger (Traces, Legacy)
+### Jaeger
 
-> Note: Jaeger now supports OTLP natively. Prefer the OTLP exporter for new setups.
-
-```csharp
-.WithTracing(tracing => tracing
-    .AddSource("MyApp.MyComponent")
-    .AddJaegerExporter(options =>
-    {
-        options.AgentHost = "localhost";
-        options.AgentPort = 6831;
-    }));
-```
-
-```bash
-dotnet add package OpenTelemetry.Exporter.Jaeger
-```
+Jaeger accepts OTLP natively. Configure the standard OTLP exporter to send traces
+to the Jaeger OTLP endpoint. The legacy `OpenTelemetry.Exporter.Jaeger` exporter is
+deprecated; use the [OTLP exporter](https://opentelemetry.io/docs/languages/dotnet/traces/jaeger/)
+for new and existing integrations.
 
 ### Zipkin (Traces)
 
@@ -626,30 +615,9 @@ index, filter, and query by `OrderId` as a structured field, not just as text.
 
 ### Log Redaction
 
-For sensitive data, implement a custom processor or use the logging pipeline:
-
-```csharp
-public class RedactingLogProcessor : BaseProcessor<LogRecord>
-{
-    private static readonly Regex EmailRegex = new(@"\b[\w.-]+@[\w.-]+\.\w+\b",
-        RegexOptions.Compiled);
-
-    public override void OnEnd(LogRecord record)
-    {
-        if (record.FormattedMessage != null)
-        {
-            // Redact email addresses
-            // Note: modify the record or drop it based on your needs
-        }
-    }
-}
-
-builder.Logging.AddOpenTelemetry(options =>
-{
-    options.AddProcessor(new RedactingLogProcessor());
-    options.AddOtlpExporter();
-});
-```
+The former placeholder processor did not modify or drop any log data and is not
+included as an example. Use the maintained [OTel .NET redaction guide](https://opentelemetry.io/docs/languages/dotnet/logs/redaction/)
+to configure and verify an actual redaction pipeline before exporting sensitive logs.
 
 See [OTel .NET: Log Redaction](https://opentelemetry.io/docs/languages/dotnet/logs/redaction/).
 

@@ -43,11 +43,14 @@ Use this skill when:
 
 ## Installation
 
-Before running tests, install Playwright browsers:
+Build the test project first so the Microsoft.Playwright package generates the CLI script in the build output, then install the browsers:
 
 ```bash
-pwsh -Command "playwright install --with-deps"
+dotnet build
+pwsh bin/Debug/netX/playwright.ps1 install --with-deps
 ```
+
+Replace `netX` with the test project's target framework (for example, `net9.0`). Use `Release` instead of `Debug` when that is the build configuration.
 
 ## Pattern 1: Basic Playwright Setup
 
@@ -516,18 +519,18 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
 
     - name: Setup .NET
-      uses: actions/setup-dotnet@v3
+      uses: actions/setup-dotnet@67a3573c9a986a3f9c594539f4ab511d57bb3ce9 # v4
       with:
         dotnet-version: 9.0.x
 
-    - name: Install Playwright Browsers
-      run: pwsh -Command "playwright install --with-deps"
-
     - name: Build
-      run: dotnet build -c Release
+      run: dotnet build tests/YourApp.UITests -c Release
+
+    - name: Install Playwright Browsers and Linux Dependencies
+      run: pwsh tests/YourApp.UITests/bin/Release/net9.0/playwright.ps1 install --with-deps
 
     - name: Run Playwright Tests
       run: |
@@ -537,7 +540,7 @@ jobs:
           --logger trx
 
     - name: Upload Screenshots
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
       if: failure()
       with:
         name: playwright-screenshots

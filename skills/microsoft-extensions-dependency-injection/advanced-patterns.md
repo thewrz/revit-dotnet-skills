@@ -165,7 +165,7 @@ public sealed class AccountProvisionActor : ReceiveActor
 
 ### Singleton Services in Actors
 
-For stateless services, inject directly (no scope needed):
+Inject a service directly into the actor when its lifetime and concurrency behavior are safe for actor use. Statelessness alone does not make a service safe as a singleton; singleton services must be thread-safe:
 
 ```csharp
 public sealed class NotificationActor : ReceiveActor

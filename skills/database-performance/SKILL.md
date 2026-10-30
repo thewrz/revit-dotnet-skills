@@ -146,12 +146,13 @@ public async Task<IReadOnlyList<OrderSummary>> GetByCustomerAsync(
         LIMIT @Limit
         """;
 
-    var rows = await connection.QueryAsync<OrderRow>(sql, new
+    var command = new CommandDefinition(sql, new
     {
         CustomerId = customerId.Value,
         Cursor = cursor?.Value,
         Limit = limit
-    });
+    }, cancellationToken: ct);
+    var rows = await connection.QueryAsync<OrderRow>(command);
 
     return rows.Select(r => r.ToOrderSummary()).ToList();
 }
@@ -168,7 +169,8 @@ public async Task<PaginatedList<OrderSummary>> GetOrdersAsync(
     var query = _context.Orders
         .AsNoTracking()
         .Where(o => o.CustomerId == customerId.Value)
-        .OrderByDescending(o => o.CreatedAt);
+        .OrderByDescending(o => o.CreatedAt)
+        .ThenByDescending(o => o.Id); // Stable ordering when timestamps tie
 
     var totalCount = await query.CountAsync(ct);
 
