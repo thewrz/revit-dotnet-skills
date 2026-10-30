@@ -1,6 +1,7 @@
 """Compile actual documentation examples; reject broken constructors/null flow."""
 import os
 import re
+import shutil
 import subprocess
 import tempfile
 import unittest
@@ -31,6 +32,21 @@ def compile_example(code):
 
 
 class ExampleTests(unittest.TestCase):
+    def test_messagepack_options_support_nested_builtin_types(self):
+        text = source('skills/serialization/SKILL.md').split('### AOT-Compatible Setup')[1]
+        options = re.search(r'var options = .*?;', text, re.DOTALL).group()
+        with tempfile.TemporaryDirectory() as temporary:
+            target = Path(temporary)
+            for fixture in (ROOT / 'tests/fixtures/messagepack').iterdir():
+                shutil.copy2(fixture, target / fixture.name)
+            program = target / 'Program.cs'
+            program.write_text(program.read_text().replace('/* OPTIONS_FROM_SKILL */', options))
+            result = subprocess.run(['dotnet', 'run', '--project', 'Repro.csproj',
+                                     '-p:RestoreLockedMode=true'], cwd=target,
+                                    capture_output=True, text=True, timeout=120, check=False)
+            self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+            self.assertIn('Nested Guid/list round trip passed', result.stdout)
+
     def test_value_objects_compile(self):
         text = source('skills/csharp-coding-standards/value-objects-and-patterns.md')
         code = re.findall(r'```csharp\n(.*?)```', text, re.DOTALL)[0]

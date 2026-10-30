@@ -44,7 +44,7 @@ These are the primary APIs library authors should use for instrumentation. Avail
 without additional packages depends on the target framework. For example, `System.Diagnostics.Metrics`
 is built into .NET 6+, while older .NET Core and .NET Framework targets may need the
 [`System.Diagnostics.DiagnosticSource` package](https://learn.microsoft.com/en-us/dotnet/core/diagnostics/compare-metric-apis);
-`ILogger<T>` may require a `Microsoft.Extensions.Logging.Abstractions` reference. Check target-framework compatibility
+`ILogger<T>` requires the `Microsoft.Extensions.Logging.Abstractions` assembly, supplied by a package/transitive reference or an appropriate shared-framework reference. Check target-framework compatibility
 before claiming zero dependencies, especially for .NET Framework/Revit hosts.
 
 ### The OTel Collection/Export Layer (Secondary — Application Root Only)

@@ -251,7 +251,7 @@ host.Run();
 ```
 
 The [Npgsql EF Core provider](https://www.npgsql.org/efcore/misc/other.html#execution-strategy)
-requires `EnableRetryOnFailure()` to opt in to its retrying strategy.
+requires `EnableRetryOnFailure()` to opt in to its retrying strategy. With retries enabled, user-initiated transactions must run inside the execution-strategy delegate, and replayed operations must be safe to retry. The MigrationWorker below already wraps its migration work in that strategy.
 
 ### MigrationWorker.cs
 

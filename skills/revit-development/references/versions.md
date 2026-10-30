@@ -38,6 +38,8 @@ Sources: [Autodesk 2024 API changes](https://blog.autodesk.io/whats-new-in-the-r
 
 Revit supplies `RevitAPI.dll` and `RevitAPIUI.dll`. For assembly references set `<Private>false</Private>`; for package references inspect their build targets and runtime assets. `PrivateAssets="all"` alone only controls transitive package propagation, not copying DLLs. Inspect the staged output to confirm host DLLs are absent.
 
+For reference-only NuGet packages, use `ExcludeAssets="runtime"` together with `PrivateAssets="all"` on each API `PackageReference`, and verify the package's build targets do not copy the files separately. Add a deployment check that rejects staged `RevitAPI*.dll`; compile success alone does not verify packaging.
+
 Deploy separate outputs/manifests for the intended year/update contract. Revit 2027 changes machine-wide add-in discovery from ProgramData to Program Files and introduces load-context manifest settings; see the [2027 SDK article](https://blog.autodesk.io/revit-2027-sdk-net-10-api-changes-and-additions/). Do not apply those paths/settings retroactively. Check dependencies already loaded by Revit/other add-ins; assembly-load isolation does not grant API thread safety.
 
 Do not publish the add-in as a self-contained app, trimmed assembly or Native AOT library. The host must discover and load managed entry points. Microsoft's [Native AOT limitations](https://learn.microsoft.com/en-us/dotnet/core/deploying/native-aot/) are relevant to separate executables, not a replacement Revit loading contract.

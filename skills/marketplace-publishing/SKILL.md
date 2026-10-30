@@ -243,7 +243,7 @@ Before committing:
 - [ ] Skill folder follows the flat naming convention
 - [ ] Path added to `plugin.json` skills array
 - [ ] Codex validator passes and README index snippets are regenerated
-- [ ] For agents: `model` is specified (haiku/sonnet/opus)
+- [ ] For agents: optional `model` matches the target runtime; omitted values inherit the runtime default
 - [ ] `./scripts/validate-marketplace.sh` passes
 
 ---

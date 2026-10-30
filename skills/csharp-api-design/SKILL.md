@@ -233,7 +233,7 @@ Prefer schema-based formats over reflection-based:
 | Newtonsoft.Json | Commonly reflection-based; type metadata is configuration-dependent | Depends on contract and polymorphism settings |
 | BinaryFormatter | Reflection-based | Terrible - never use |
 
-See `dotnet/serialization` skill for details.
+See [serialization](../serialization/SKILL.md) for details.
 
 ---
 
