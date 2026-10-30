@@ -1,6 +1,6 @@
 ---
 name: dotnet-project-structure
-description: Modern .NET project structure including .slnx solution format, Directory.Build.props, central package management, SourceLink, version management with RELEASE_NOTES.md, and SDK pinning with global.json.
+description: Use when creating or changing .NET solutions, projects, build properties, SDK pins, package configuration or release metadata, including Revit add-ins.
 user-invocable: false
 ---
 

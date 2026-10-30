@@ -21,6 +21,8 @@ Use this skill when:
 
 ## Core Principles
 
+This skill uses an intentional **explicit-configuration profile**. For shared defaults, retain telemetry, health checks and resilience; omit `Microsoft.Extensions.ServiceDiscovery`, `builder.Services.AddServiceDiscovery()` and `http.AddServiceDiscovery()`. Supply resolved endpoint URLs through configuration. The [discovery-enabled defaults](../aspire-service-defaults/SKILL.md) are an alternative profile.
+
 1. **AppHost owns Aspire infrastructure packages**
    - Aspire Hosting packages belong in AppHost only.
    - App projects should not reference Aspire client/service-discovery packages.
@@ -104,8 +106,7 @@ builder.Services.AddSingleton<IBlobStorageService>(sp =>
 });
 ```
 
-**Do not** add Aspire client packages (or `AddServiceDiscovery`) to the app.
-Those are orchestration concerns and should stay in AppHost.
+Keep application dependencies consistent with the selected profile. Service discovery is a legitimate application-level facility, but this profile resolves endpoints through explicit configuration instead.
 
 ---
 

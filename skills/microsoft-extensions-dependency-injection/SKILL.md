@@ -86,6 +86,8 @@ public static class UserServiceCollectionExtensions
 
 ### With Configuration
 
+These registrations use [the configuration skill's startup contract](../microsoft-extensions-configuration/SKILL.md#enable-data-annotations-validation): a plain provider needs explicit options validation before use.
+
 ```csharp
 namespace MyApp.Email;
 

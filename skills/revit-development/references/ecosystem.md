@@ -17,7 +17,7 @@ Do not add Toolkit and Revit.Async together by default; choose a dispatch abstra
 ## Dependency review
 
 1. Verify package identity against publisher repository and NuGet metadata; pin exact versions/lock restore.
-2. Inspect transitive dependencies, native assets, WPF support and assemblies already loaded by Revit. Keep host-provided API references out of deployment.
+2. Inspect transitive dependencies, native assets, WPF support and [packaging requirements](packaging.md). Omit dependencies only when the supported host/runtime guarantees them; another add-in loading a copy is not such a guarantee.
 3. Run the installed SDK's NuGet vulnerability audit for each target (use its documented CLI syntax), and inspect package licenses. Do not equate a clean audit with host compatibility.
 4. Test installation and assembly loading on each supported host/update combination, including other required add-ins. Do not change Revit's process-wide binding/runtime configuration to hide a conflict.
 
@@ -26,8 +26,8 @@ Microsoft sources: [Central Package Management](https://learn.microsoft.com/en-u
 ## Verification layers
 
 - **Pure tests:** calculations, units at contract boundaries, tolerances, validation, unchanged-value elimination, idempotent plans and cancellation on detached DTOs. Run without loading Revit.
-- **Build matrix:** each API year and runtime configuration, including both sides of the 2025.5/2026.5 transition where supported. Check obsolete diagnostics and staged files.
-- **Host tests:** command registration, actual model edits, commit/rollback, failure handling, modeless dispatch, document switch/close while queued, stale snapshots, worksharing rejection, cancellation and undo behavior.
+- **Build matrix:** each supported API/runtime configuration, including both sides of supported runtime transitions. Switch targets without cleaning; inspect obsolete diagnostics and staged files.
+- **Host tests:** command registration and UI behavior; for implemented writes/modeless work, test commit/rollback, failure handling, document switch/close, stale snapshots, worksharing, cancellation and undo.
 - **Performance:** small and large representative models, with separate extraction/compute/apply timings and transaction counts. Test partial completion honestly; no brittle universal millisecond threshold.
 
 A CI restore/build on Linux validates neither Revit loading nor transactions. Host integration needs Windows and a properly licensed supported Revit environment. Testcontainers is useful for separate data services, not a containerized substitute for the Revit UI host.

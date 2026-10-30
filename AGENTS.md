@@ -108,6 +108,7 @@ See `skills/marketplace-publishing/SKILL.md` for detailed workflow.
 
 ## Content Guidelines
 
+- Anonymize every research artifact stored in this repository. Keep proprietary source, raw logs, project/host identities and paths outside the checkout; include only generic lessons and public-source citations here. Check tracked and untracked content before committing or publishing.
 - Inherited skills should remain comprehensive reference documents (10-40KB). The new revit-development entry point uses focused supporting references
 - Include concrete code examples with modern C# patterns
 - Reference authoritative sources rather than duplicating content

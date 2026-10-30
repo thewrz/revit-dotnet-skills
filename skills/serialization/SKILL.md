@@ -51,7 +51,7 @@ Use this skill when:
 | Format | Problem |
 |--------|---------|
 | **BinaryFormatter** | Security vulnerabilities, deprecated, never use |
-| **Newtonsoft.Json default** | Type names in payload break on rename |
+| **Enabled CLR type-name metadata** | Couples payloads to CLR names; Newtonsoft.Json defaults to [`TypeNameHandling.None`](https://www.newtonsoft.com/json/help/html/P_Newtonsoft_Json_JsonSerializerSettings_TypeNameHandling.htm) |
 | **DataContractSerializer** | Complex, poor versioning |
 | **XML** | Verbose, slow, complex |
 
